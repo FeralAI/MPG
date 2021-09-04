@@ -4,7 +4,7 @@ C++ library for USB gamepad handling with support for XInput, DirectInput and Ni
 
 ## Gamepad Class
 
-The heart of the library is the `Gamepad` class, and more specifically the virtual `Gamepad::setup()` and `Gamepad::read()` class methods that require implementation in your project. Use the `setup()` method for things like initializing microcontroller pins, performing analog calibration, etc., and the `read()` method to implement your platform-specific logic to read inputs and fill the `Gamepad::state` member variable. That `state` variable is then used in other class methods to generate USB report data for the selected input type.
+The heart of the library is the `Gamepad` class, and more specifically the virtual `Gamepad::setup()` and `Gamepad::read()` class methods that require implementation in your project. Use the `setup()` method for things like initializing microcontroller pins, performing analog calibration, etc., and the `read()` method to implement your platform-specific logic to fill the `Gamepad.state` member variable. That `state` variable is then used in other class methods for input processing (debouncing, SOCD cleaning, etc.) and to generate USB report data for the selected input type.
 
 A basic `Gamepad` class implementation in Arduino-land for a Leonardo might look like this:
 
@@ -59,9 +59,13 @@ void Gamepad::read() {
   // Get port states
   uint8_t ports[] = { ~PINB, ~PIND, ~PINF };
 
-  // No analog triggers, but could read them here
+  // No analog, but could read them here
   state.lt = 0;
   state.rt = 0;
+  state.lx = GAMEPAD_JOYSTICK_MID;
+  state.ly = GAMEPAD_JOYSTICK_MID;
+  state.rx = GAMEPAD_JOYSTICK_MID;
+  state.ry = GAMEPAD_JOYSTICK_MID;
 
   // Read digital inputs
   state.dpad = 0
@@ -90,9 +94,13 @@ void Gamepad::read() {
 From there just call the `Gamepad` class methods:
 
 ```c++
+/*
+ * MyAwesomeGamepad.ino
+ */
+
+#define GAMEPAD_DEBOUNCE_MILLIS 5
 
 #include <Gamepad.h>
-#include <GamepadDescriptors.h>
 
 Gamepad gamepad;
 
@@ -101,7 +109,7 @@ void setup() {
   gamepad.load();  // Get saved options if enabled
   gamepad.read();  // Perform an initial button read so we can set input mode
 
-  // Check for input mode override
+  // Use the inlined `pressed` convenience methods
   if (gamepad.pressedR3())
     gamepad.inputMode = INPUT_MODE_HID;
   else if (gamepad.pressedS1())
@@ -114,7 +122,7 @@ void setup() {
 }
 
 void loop() {
-  // Create local static variables for loop
+  // Cache report pointer and size value
   static uint8_t *report;
   static const uint8_t reportSize = gamepad.getReportSize();
 
