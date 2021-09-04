@@ -2,11 +2,11 @@
 
 C++ library for USB gamepad handling with support for XInput, DirectInput and Nintendo Switch. MPG makes no assumptions about your USB implementation, but provides the platform-specific USB descriptors and HID/XID reports to make your implementation easier. Should be compatible with any type of C++ project (Arduino, PlatformIO, CMake, etc.).
 
-## Gamepad Class
+## MPG Class
 
-The heart of the library is the `Gamepad` class, and more specifically the virtual `Gamepad::setup()` and `Gamepad::read()` class methods that require implementation in your project. Use the `setup()` method for things like initializing microcontroller pins, performing analog calibration, etc., and the `read()` method to implement your platform-specific logic to fill the `Gamepad.state` member variable. That `state` variable is then used in other class methods for input processing (debouncing, SOCD cleaning, etc.) and to generate USB report data for the selected input type.
+The heart of the library is the `MPG` class, and more specifically the virtual `MPG::setup()` and `MPG::read()` class methods that require implementation in your project. Use the `setup()` method for things like initializing microcontroller pins, performing analog calibration, etc., and the `read()` method to implement your platform-specific logic to fill the `MPG.state` member variable. That `state` variable is then used in other class methods for input processing (debouncing, SOCD cleaning, etc.) and to generate USB report data for the selected input type.
 
-A basic `Gamepad` class implementation in Arduino-land for a Leonardo might look like this:
+A basic `MPG` class implementation in Arduino-land for a Leonardo might look like this:
 
 ```c++
 /*
@@ -16,7 +16,7 @@ A basic `Gamepad` class implementation in Arduino-land for a Leonardo might look
  * digitalRead() can still work, but not recommended because SLOW.
  */
 
-#include <Gamepad.h>
+#include <MPG.h>
 
 #define PORT_PIN_UP     PF7 // A0
 #define PORT_PIN_DOWN   PF6 // A1
@@ -43,7 +43,7 @@ A basic `Gamepad` class implementation in Arduino-land for a Leonardo might look
 #define PORTD_INDEX 1
 #define PORTF_INDEX 2
 
-void Gamepad::setup() {
+void MPG::setup() {
   // Set to input (invert mask to set to 0)
   DDRB = DDRB & ~PORTB_INPUT_MASK;
   DDRD = DDRD & ~PORTD_INPUT_MASK;
@@ -55,7 +55,7 @@ void Gamepad::setup() {
   PORTF = PORTF | PORTF_INPUT_MASK;
 }
 
-void Gamepad::read() {
+void MPG::read() {
   // Get port states
   uint8_t ports[] = { ~PINB, ~PIND, ~PINF };
 
@@ -100,37 +100,37 @@ From there just call the `Gamepad` class methods:
 
 #define GAMEPAD_DEBOUNCE_MILLIS 5
 
-#include <Gamepad.h>
+#include <MPG.h>
 
-Gamepad gamepad;
+MPG mpg;
 
 void setup() {
-  gamepad.setup(); // Runs your custom setup logic
-  gamepad.load();  // Get saved options if enabled
-  gamepad.read();  // Perform an initial button read so we can set input mode
+  mpg.setup(); // Runs your custom setup logic
+  mpg.load();  // Get saved options if enabled
+  mpg.read();  // Perform an initial button read so we can set input mode
 
   // Use the inlined `pressed` convenience methods
-  if (gamepad.pressedR3())
-    gamepad.inputMode = INPUT_MODE_HID;
-  else if (gamepad.pressedS1())
-    gamepad.inputMode = INPUT_MODE_SWITCH;
-  else if (gamepad.pressedS2())
-    gamepad.inputMode = INPUT_MODE_XINPUT;
+  if (mpg.pressedR3())
+    mpg.inputMode = INPUT_MODE_HID;
+  else if (mpg.pressedS1())
+    mpg.inputMode = INPUT_MODE_SWITCH;
+  else if (mpg.pressedS2())
+    mpg.inputMode = INPUT_MODE_XINPUT;
 
   // TODO: Add your USB initialization logic here, something like:
-  // setupHardware(gamepad.inputMode);
+  // setupHardware(mpg.inputMode);
 }
 
 void loop() {
   // Cache report pointer and size value
   static uint8_t *report;
-  static const uint8_t reportSize = gamepad.getReportSize();
+  static const uint8_t reportSize = mpg.getReportSize();
 
-  gamepad.read();               // Read inputs
-  gamepad.debounce();           // Run debouncing if required
-  gamepad.hotkey();             // Check for hotkey changes, can react to returned hotkey action
-  gamepad.process();            // Process the raw inputs into a usable state
-  report = gamepad.getReport(); // Convert state to USB report for the selected input mode
+  mpg.read();               // Read inputs
+  mpg.debounce();           // Run debouncing if required
+  mpg.hotkey();             // Check for hotkey changes, can react to returned hotkey action
+  mpg.process();            // Process the raw inputs into a usable state
+  report = mpg.getReport(); // Convert state to USB report for the selected input mode
   
   // TODO: Add your USB report sending logic here, something like:
   // sendReport(report, reportSize);

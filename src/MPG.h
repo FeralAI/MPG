@@ -3,8 +3,8 @@
  * SPDX-FileCopyrightText: Copyright (c) 2021 Jason Skuby (mytechtoybox.com)
  */
 
-#ifndef GAMEPAD_H_
-#define GAMEPAD_H_
+#ifndef MPG_H_
+#define MPG_H_
 
 #include <stdio.h>
 #include <stdint.h>
@@ -27,19 +27,10 @@
 #define GAMEPAD_BUTTON_INPUT_COUNT 14	 // Number of normal buttons (not D-pad)
 #define GAMEPAD_DIGITAL_INPUT_COUNT 18 // Total number of buttons, including D-pad
 
-struct GamepadButtonMapping
-{
-	const uint8_t port;
-	const uint8_t pin;
-	const uint32_t pinMask;
-	const uint32_t buttonMask;
-	const int8_t ledPos;
-};
-
-class Gamepad
+class MPG
 {
 	public:
-		Gamepad()
+		MPG()
 		{
 			#if GAMEPAD_DEBOUNCE_MILLIS > 0
 				for (int i = 0; i < GAMEPAD_DIGITAL_INPUT_COUNT; i++)

@@ -3,9 +3,9 @@
  * SPDX-FileCopyrightText: Copyright (c) 2021 Jason Skuby (mytechtoybox.com)
  */
 
-#include "Gamepad.h"
+#include "MPG.h"
 
-void Gamepad::debounce()
+void MPG::debounce()
 {
 	for (int i = 0; i < GAMEPAD_DIGITAL_INPUT_COUNT; i++)
 	{
@@ -32,7 +32,7 @@ void Gamepad::debounce()
 	}
 }
 
-uint8_t *Gamepad::getReport()
+uint8_t *MPG::getReport()
 {
 	switch (inputMode)
 	{
@@ -47,7 +47,7 @@ uint8_t *Gamepad::getReport()
 	}
 }
 
-uint8_t Gamepad::getReportSize()
+uint8_t MPG::getReportSize()
 {
 	switch (inputMode)
 	{
@@ -62,7 +62,7 @@ uint8_t Gamepad::getReportSize()
 	}
 }
 
-HIDReport *Gamepad::getHIDReport()
+HIDReport *MPG::getHIDReport()
 {
 	static HIDReport hidReport =
 	{
@@ -112,7 +112,7 @@ HIDReport *Gamepad::getHIDReport()
 	return &hidReport;
 }
 
-SwitchReport *Gamepad::getSwitchReport()
+SwitchReport *MPG::getSwitchReport()
 {
 	static SwitchReport switchReport =
 	{
@@ -163,7 +163,7 @@ SwitchReport *Gamepad::getSwitchReport()
 	return &switchReport;
 }
 
-XInputReport *Gamepad::getXInputReport()
+XInputReport *MPG::getXInputReport()
 {
 	static XInputReport xinputReport =
 	{
@@ -218,7 +218,7 @@ XInputReport *Gamepad::getXInputReport()
 	return &xinputReport;
 }
 
-GamepadHotkey Gamepad::hotkey()
+GamepadHotkey MPG::hotkey()
 {
 	GamepadHotkey action = HOTKEY_NONE;
 	if (isDpadHotkeyPressed())
@@ -288,7 +288,7 @@ GamepadHotkey Gamepad::hotkey()
 	return action;
 }
 
-void Gamepad::process()
+void MPG::process()
 {
 	state.dpad = runSOCDCleaner(socdMode, state.dpad);
 
@@ -311,7 +311,7 @@ void Gamepad::process()
 	}
 }
 
-void Gamepad::load()
+void MPG::load()
 {
 #if HAS_PERSISTENT_STORAGE == 1
 	inputMode = Storage.getInputMode();
@@ -328,7 +328,7 @@ void Gamepad::load()
 #endif
 }
 
-void Gamepad::save()
+void MPG::save()
 {
 #if HAS_PERSISTENT_STORAGE == 1
 	Storage.setInputMode(inputMode);
@@ -338,13 +338,13 @@ void Gamepad::save()
 #endif
 }
 
-bool Gamepad::isDpadHotkeyPressed()
+bool MPG::isDpadHotkeyPressed()
 {
 	// Select + Start
 	return (state.buttons & (GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2)) == (GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
 }
 
-bool Gamepad::isSOCDHotkeyPressed()
+bool MPG::isSOCDHotkeyPressed()
 {
 	// LS + RS
 	return (state.buttons & (GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3)) == (GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
