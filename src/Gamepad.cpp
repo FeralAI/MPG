@@ -5,7 +5,7 @@
 
 #include "Gamepad.h"
 
-void GamepadClass::debounce()
+void Gamepad::debounce()
 {
 	for (int i = 0; i < GAMEPAD_DIGITAL_INPUT_COUNT; i++)
 	{
@@ -32,7 +32,7 @@ void GamepadClass::debounce()
 	}
 }
 
-uint8_t *GamepadClass::getReport()
+uint8_t *Gamepad::getReport()
 {
 	switch (inputMode)
 	{
@@ -47,7 +47,7 @@ uint8_t *GamepadClass::getReport()
 	}
 }
 
-uint8_t GamepadClass::getReportSize()
+uint8_t Gamepad::getReportSize()
 {
 	switch (inputMode)
 	{
@@ -62,7 +62,7 @@ uint8_t GamepadClass::getReportSize()
 	}
 }
 
-HIDReport *GamepadClass::getHIDReport()
+HIDReport *Gamepad::getHIDReport()
 {
 	static HIDReport hidReport =
 	{
@@ -112,7 +112,7 @@ HIDReport *GamepadClass::getHIDReport()
 	return &hidReport;
 }
 
-SwitchReport *GamepadClass::getSwitchReport()
+SwitchReport *Gamepad::getSwitchReport()
 {
 	static SwitchReport switchReport =
 	{
@@ -163,7 +163,7 @@ SwitchReport *GamepadClass::getSwitchReport()
 	return &switchReport;
 }
 
-XInputReport *GamepadClass::getXInputReport()
+XInputReport *Gamepad::getXInputReport()
 {
 	static XInputReport xinputReport =
 	{
@@ -218,7 +218,7 @@ XInputReport *GamepadClass::getXInputReport()
 	return &xinputReport;
 }
 
-GamepadHotkey GamepadClass::hotkey()
+GamepadHotkey Gamepad::hotkey()
 {
 	GamepadHotkey action = HOTKEY_NONE;
 	if (isDpadHotkeyPressed())
@@ -288,7 +288,7 @@ GamepadHotkey GamepadClass::hotkey()
 	return action;
 }
 
-void GamepadClass::process()
+void Gamepad::process()
 {
 	state.dpad = runSOCDCleaner(socdMode, state.dpad);
 
@@ -311,7 +311,7 @@ void GamepadClass::process()
 	}
 }
 
-void GamepadClass::load()
+void Gamepad::load()
 {
 #if HAS_PERSISTENT_STORAGE == 1
 	inputMode = Storage.getInputMode();
@@ -328,7 +328,7 @@ void GamepadClass::load()
 #endif
 }
 
-void GamepadClass::save()
+void Gamepad::save()
 {
 #if HAS_PERSISTENT_STORAGE == 1
 	Storage.setInputMode(inputMode);
@@ -338,13 +338,13 @@ void GamepadClass::save()
 #endif
 }
 
-bool GamepadClass::isDpadHotkeyPressed()
+bool Gamepad::isDpadHotkeyPressed()
 {
 	// Select + Start
 	return (state.buttons & (GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2)) == (GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
 }
 
-bool GamepadClass::isSOCDHotkeyPressed()
+bool Gamepad::isSOCDHotkeyPressed()
 {
 	// LS + RS
 	return (state.buttons & (GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3)) == (GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);

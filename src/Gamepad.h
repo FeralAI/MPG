@@ -36,10 +36,10 @@ struct GamepadButtonMapping
 	const int8_t ledPos;
 };
 
-class GamepadClass
+class Gamepad
 {
 	public:
-		GamepadClass()
+		Gamepad()
 		{
 			#if GAMEPAD_DEBOUNCE_MILLIS > 0
 				for (int i = 0; i < GAMEPAD_DIGITAL_INPUT_COUNT; i++)
@@ -65,7 +65,6 @@ class GamepadClass
 		bool hasAnalogTriggers = false;
 		bool hasLeftAnalogStick = false;
 		bool hasRightAnalogStick = false;
-		bool hasStorage = false;
 
 		/**
 		 * Load the saved configuration from persitent storage
