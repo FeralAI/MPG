@@ -271,6 +271,4 @@ class GamepadClass
 		#endif
 };
 
-static GamepadClass Gamepad;
-
 #endif
