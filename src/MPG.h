@@ -9,9 +9,9 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include "GamepadEnums.h"
 #include "GamepadConfig.h"
 #include "GamepadDescriptors.h"
-#include "GamepadEnums.h"
 #include "GamepadState.h"
 #include "GamepadDebouncer.h"
 

@@ -7,7 +7,6 @@
 #define GAMEPAD_STORAGE_H_
 
 #include "GamepadEnums.h"
-#include "GamepadDescriptors.h"
 
 #define STORAGE_INPUT_MODE_INDEX 0 // 1 byte
 #define STORAGE_DPAD_MODE_INDEX  1 // 1 byte

@@ -6,6 +6,14 @@
 #ifndef GAMEPAD_ENUMS_H_
 #define GAMEPAD_ENUMS_H_
 
+// The available input modes
+typedef enum
+{
+	INPUT_MODE_XINPUT,
+	INPUT_MODE_SWITCH,
+	INPUT_MODE_HID,
+} InputMode;
+
 // The available stick emulation modes
 typedef enum
 {
