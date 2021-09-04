@@ -47,25 +47,6 @@ class GamepadClass
 			#endif
 		}
 
-		static GamepadButtonMapping mapDpadUp;
-		static GamepadButtonMapping mapDpadDown;
-		static GamepadButtonMapping mapDpadLeft;
-		static GamepadButtonMapping mapDpadRight;
-		static GamepadButtonMapping mapButtonB1;
-		static GamepadButtonMapping mapButtonB2;
-		static GamepadButtonMapping mapButtonB3;
-		static GamepadButtonMapping mapButtonB4;
-		static GamepadButtonMapping mapButtonL1;
-		static GamepadButtonMapping mapButtonR1;
-		static GamepadButtonMapping mapButtonL2;
-		static GamepadButtonMapping mapButtonR2;
-		static GamepadButtonMapping mapButtonS1;
-		static GamepadButtonMapping mapButtonS2;
-		static GamepadButtonMapping mapButtonL3;
-		static GamepadButtonMapping mapButtonR3;
-		static GamepadButtonMapping mapButtonA1;
-		static GamepadButtonMapping mapButtonA2;
-
 		DpadMode dpadMode = DPAD_MODE_DIGITAL;
 		InputMode inputMode = INPUT_MODE_XINPUT;
 		SOCDMode socdMode = SOCD_MODE_UP_PRIORITY;

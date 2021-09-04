@@ -63,13 +63,14 @@ typedef struct
 	uint8_t ry;
 } SwitchOutReport;
 
+static const char switch_string_language[]     = { 0x09, 0x04 };
 static const char switch_string_manufacturer[] = "HORI CO.,LTD.";
 static const char switch_string_product[]      = "POKKEN CONTROLLER";
 static const char switch_string_version[]      = "1.0";
 
 static const char *switch_string_descriptors[] =
 {
-	(const char[]){ 0x09, 0x04 },
+	switch_string_language,
 	switch_string_manufacturer,
 	switch_string_product,
 	switch_string_version
@@ -91,6 +92,17 @@ static const uint8_t switch_device_descriptor[] =
 	0x02,        // iProduct (String Index)
 	0x00,        // iSerialNumber (String Index)
 	0x01,        // bNumConfigurations 1
+};
+
+static const uint8_t switch_hid_descriptor[] =
+{
+	0x09,        // bLength
+	0x21,        // bDescriptorType (HID)
+	0x11, 0x01,  // bcdHID 1.11
+	0x00,        // bCountryCode
+	0x01,        // bNumDescriptors
+	0x22,        // bDescriptorType[0] (HID)
+	0x56, 0x00,  // wDescriptorLength[0] 86
 };
 
 static const uint8_t switch_configuration_descriptor[] =

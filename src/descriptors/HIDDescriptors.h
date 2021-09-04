@@ -52,13 +52,14 @@ typedef struct
 	uint8_t ry;
 } HIDReport;
 
+static const char hid_string_language[]     = { 0x09, 0x04 };
 static const char hid_string_manufacturer[] = "Generic";
 static const char hid_string_product[]      = "HID Gamepad";
 static const char hid_string_version[]      = "1.0";
 
 static const char *hid_string_descriptors[] =
 {
-	(const char[]){ 0x09, 0x04 },
+	hid_string_language,
 	hid_string_manufacturer,
 	hid_string_product,
 	hid_string_version
@@ -80,6 +81,19 @@ static const uint8_t hid_device_descriptor[] =
 	0x02,        // iProduct (String Index)
 	0x00,        // iSerialNumber (String Index)
 	0x01,        // bNumConfigurations 1
+};
+
+static const uint8_t hid_hid_descriptor[] =
+{
+	0x09,        // bLength
+	0x04,        // bDescriptorType (Interface)
+	0x00,        // bInterfaceNumber 0
+	0x00,        // bAlternateSetting
+	0x01,        // bNumEndpoints 1
+	0x03,        // bInterfaceClass
+	0x00,        // bInterfaceSubClass
+	0x00,        // bInterfaceProtocol
+	0x00,        // iInterface (String Index)
 };
 
 static const uint8_t hid_configuration_descriptor[] =
