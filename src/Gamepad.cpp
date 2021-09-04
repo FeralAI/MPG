@@ -313,6 +313,7 @@ void GamepadClass::process()
 
 void GamepadClass::load()
 {
+#if HAS_PERSISTENT_STORAGE == 1
 	inputMode = Storage.getInputMode();
 	if (inputMode > INPUT_MODE_HID)
 		inputMode = DEFAULT_INPUT_MODE;
@@ -321,17 +322,20 @@ void GamepadClass::load()
 	if (dpadMode > DPAD_MODE_RIGHT_ANALOG)
 		dpadMode = DEFAULT_DPAD_MODE;
 
-	socdMode = Storage.getSOCDMode();;
+	socdMode = Storage.getSOCDMode();
 	if (socdMode > SOCD_MODE_SECOND_INPUT_PRIORITY)
 		socdMode = DEFAULT_SOCD_MODE;
+#endif
 }
 
 void GamepadClass::save()
 {
+#if HAS_PERSISTENT_STORAGE == 1
 	Storage.setInputMode(inputMode);
 	Storage.setDpadMode(dpadMode);
 	Storage.setSOCDMode(socdMode);
 	Storage.save();
+#endif
 }
 
 bool GamepadClass::isDpadHotkeyPressed()

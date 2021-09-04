@@ -6,9 +6,9 @@
 #ifndef GAMEPAD_DESCRIPTORS_H_
 #define GAMEPAD_DESCRIPTORS_H_
 
-#include "HIDDescriptors.h"
-#include "SwitchDescriptors.h"
-#include "XInputDescriptors.h"
+#include "descriptors/HIDDescriptors.h"
+#include "descriptors/SwitchDescriptors.h"
+#include "descriptors/XInputDescriptors.h"
 
 // The available input modes
 typedef enum

@@ -14,7 +14,10 @@
 #include "GamepadEnums.h"
 #include "GamepadState.h"
 #include "GamepadDebouncer.h"
+
+#if HAS_PERSISTENT_STORAGE == 1
 #include "GamepadStorage.h"
+#endif
 
 #ifndef GAMEPAD_DEBOUNCE_MILLIS
 #define GAMEPAD_DEBOUNCE_MILLIS 0
@@ -81,6 +84,7 @@ class GamepadClass
 		bool hasAnalogTriggers = false;
 		bool hasLeftAnalogStick = false;
 		bool hasRightAnalogStick = false;
+		bool hasStorage = false;
 
 		/**
 		 * Load the saved configuration from persitent storage
