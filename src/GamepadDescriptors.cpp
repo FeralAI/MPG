@@ -64,20 +64,47 @@ static uint16_t getHIDReport(const uint8_t *buffer, InputMode mode)
 	}
 }
 
-static uint16_t getStringDescriptor(const uint8_t *buffer, InputMode mode, uint8_t index)
+static uint16_t getStringDescriptor(const uint16_t *buffer, InputMode mode, uint8_t index)
 {
+	static uint8_t descriptorStringBuffer[64]; // Max 64 bytes
+
+	const char *value;
+	uint16_t size;
+	uint8_t charCount;
+
 	switch (mode)
 	{
 		case INPUT_MODE_XINPUT:
-			buffer = xinput_string_descriptors[index];
-			return sizeof(xinput_string_descriptors[index]);
+			value = xinput_string_descriptors[index];
+			size = sizeof(xinput_string_descriptors[index]);
+			break;
 
 		case INPUT_MODE_SWITCH:
-			buffer = switch_string_descriptors[index];
-			return sizeof(switch_string_descriptors[index]);
+			value = switch_string_descriptors[index];
+			size = sizeof(switch_string_descriptors[index]);
+			break;
 
 		default:
-			buffer = hid_string_descriptors[index];
-			return sizeof(hid_string_descriptors[index]);
+			value = hid_string_descriptors[index];
+			size = sizeof(hid_string_descriptors[index]);
+			break;
 	}
+
+	// Cap at max char
+	charCount = strlen(value);
+	if (charCount > 31)
+		charCount = 31;
+
+	for (uint8_t i = 0; i < charCount; i++)
+		descriptorStringBuffer[1 + i] = value[i];
+
+
+	// first byte is length (including header), second byte is string type
+	descriptorStringBuffer[0] = (2 * charCount + 2);
+	descriptorStringBuffer[1] = 0x03;
+
+	// Cast temp buffer to final result
+	buffer = (uint16_t *)descriptorStringBuffer;
+
+	return size;
 }

@@ -45,12 +45,12 @@ typedef struct {
 	uint8_t _reserved[6];
 } XInputReport;
 
-static const uint8_t xinput_string_language[]    = { 0x09, 0x04 };
-static const uint8_t xinput_string_manfacturer[] = "Microsoft";
-static const uint8_t xinput_string_product[]     = "XInput STANDARD GAMEPAD";
-static const uint8_t xinput_string_version[]     = "1.0";
+static const char xinput_string_language[]    = { 0x09, 0x04 };
+static const char xinput_string_manfacturer[] = "Microsoft";
+static const char xinput_string_product[]     = "XInput STANDARD GAMEPAD";
+static const char xinput_string_version[]     = "1.0";
 
-static const uint8_t *xinput_string_descriptors[] =
+static const char *xinput_string_descriptors[] =
 {
 	xinput_string_language,
 	xinput_string_manfacturer,
