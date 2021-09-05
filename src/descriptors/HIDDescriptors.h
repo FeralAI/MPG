@@ -52,12 +52,12 @@ typedef struct
 	uint8_t ry;
 } HIDReport;
 
-static const wchar_t hid_string_language[]     = { 0x09, 0x04 };
-static const wchar_t hid_string_manufacturer[] = L"Generic";
-static const wchar_t hid_string_product[]      = L"HID Gamepad";
-static const wchar_t hid_string_version[]      = L"1.0";
+static const uint8_t hid_string_language[]     = { 0x09, 0x04 };
+static const uint8_t hid_string_manufacturer[] = "Generic";
+static const uint8_t hid_string_product[]      = "HID Gamepad";
+static const uint8_t hid_string_version[]      = "1.0";
 
-static const wchar_t *hid_string_descriptors[] =
+static const uint8_t *hid_string_descriptors[] =
 {
 	hid_string_language,
 	hid_string_manufacturer,
