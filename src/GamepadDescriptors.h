@@ -12,7 +12,7 @@
 #include "descriptors/SwitchDescriptors.h"
 #include "descriptors/XInputDescriptors.h"
 
-static uint8_t *getConfigurationDescriptor(uint16_t *size, InputMode mode)
+static const uint8_t *getConfigurationDescriptor(uint16_t *size, InputMode mode)
 {
 	switch (mode)
 	{
@@ -30,7 +30,7 @@ static uint8_t *getConfigurationDescriptor(uint16_t *size, InputMode mode)
 	}
 }
 
-static uint8_t *getDeviceDescriptor(uint16_t *size, InputMode mode)
+static const uint8_t *getDeviceDescriptor(uint16_t *size, InputMode mode)
 {
 	switch (mode)
 	{
@@ -48,7 +48,7 @@ static uint8_t *getDeviceDescriptor(uint16_t *size, InputMode mode)
 	}
 }
 
-static uint8_t *getHIDDescriptor(uint16_t *size, InputMode mode)
+static const uint8_t *getHIDDescriptor(uint16_t *size, InputMode mode)
 {
 	switch (mode)
 	{
@@ -62,7 +62,7 @@ static uint8_t *getHIDDescriptor(uint16_t *size, InputMode mode)
 	}
 }
 
-static uint8_t *getHIDReport(uint16_t *size, InputMode mode)
+static const uint8_t *getHIDReport(uint16_t *size, InputMode mode)
 {
 	switch (mode)
 	{
@@ -76,7 +76,7 @@ static uint8_t *getHIDReport(uint16_t *size, InputMode mode)
 	}
 }
 
-static uint16_t *getStringDescriptor(uint16_t *size, InputMode mode, uint8_t index)
+static const uint16_t *getStringDescriptor(uint16_t *size, InputMode mode, uint8_t index)
 {
 	static uint16_t utf16Descriptor[32];
 
