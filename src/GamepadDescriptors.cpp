@@ -75,17 +75,17 @@ static uint16_t getStringDescriptor(const uint16_t *buffer, InputMode mode, uint
 	switch (mode)
 	{
 		case INPUT_MODE_XINPUT:
-			value = xinput_string_descriptors[index];
+			value = (const char *)xinput_string_descriptors[index];
 			size = sizeof(xinput_string_descriptors[index]);
 			break;
 
 		case INPUT_MODE_SWITCH:
-			value = switch_string_descriptors[index];
+			value = (const char *)switch_string_descriptors[index];
 			size = sizeof(switch_string_descriptors[index]);
 			break;
 
 		default:
-			value = hid_string_descriptors[index];
+			value = (const char *)hid_string_descriptors[index];
 			size = sizeof(hid_string_descriptors[index]);
 			break;
 	}
