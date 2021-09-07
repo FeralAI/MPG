@@ -168,7 +168,7 @@ XInputReport *MPG::getXInputReport()
 	static XInputReport xinputReport =
 	{
 		.report_id = 0,
-		.report_size = XINPUT_REPORT_SIZE,
+		.report_size = XINPUT_ENDPOINT_SIZE,
 		.buttons1 = 0,
 		.buttons2 = 0,
 		.lt = 0,

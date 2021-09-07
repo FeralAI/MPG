@@ -8,8 +8,7 @@
 
 #include <stdint.h>
 
-#define XINPUT_REPORT_SIZE 20
-#define XINPUT_UNKNOWN_DESCRIPTOR_SIZE 16
+#define XINPUT_ENDPOINT_SIZE 20
 
 // Buttons 1 (8 bits)
 #define XBOX_MASK_UP    (1U << 0)
@@ -45,12 +44,12 @@ typedef struct {
 	uint8_t _reserved[6];
 } XInputReport;
 
-static const char xinput_string_language[]    = { 0x09, 0x04 };
-static const char xinput_string_manfacturer[] = "Microsoft";
-static const char xinput_string_product[]     = "XInput STANDARD GAMEPAD";
-static const char xinput_string_version[]     = "1.0";
+static const uint8_t xinput_string_language[]    = { 0x09, 0x04 };
+static const uint8_t xinput_string_manfacturer[] = "Microsoft";
+static const uint8_t xinput_string_product[]     = "XInput STANDARD GAMEPAD";
+static const uint8_t xinput_string_version[]     = "1.0";
 
-static const char *xinput_string_descriptors[] =
+static const uint8_t *xinput_string_descriptors[] =
 {
 	xinput_string_language,
 	xinput_string_manfacturer,

@@ -2,8 +2,8 @@
  * MPG example for Arduino Leonardo and other 32u4 compatible boards using the HID-Project library.
  */
 
-#include "MPG.h"
-#include "HID-Project.h"
+#include <MPG.h>
+#include <HID-Project.h>
 
 #define GAMEPAD_DEBOUNCE_MILLIS 5
 
