@@ -30,7 +30,8 @@
 #define XBOX_MASK_X     (1U << 6)
 #define XBOX_MASK_Y     (1U << 7)
 
-typedef struct {
+typedef struct __attribute((packed, aligned(1)))
+{
 	uint8_t report_id;
 	uint8_t report_size;
 	uint8_t buttons1;

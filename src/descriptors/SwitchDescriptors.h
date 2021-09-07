@@ -42,7 +42,7 @@
 #define SWITCH_JOYSTICK_MID 0x80
 #define SWITCH_JOYSTICK_MAX 0xFF
 
-typedef struct
+typedef struct __attribute((packed, aligned(1)))
 {
 	uint16_t buttons;
 	uint8_t hat;
