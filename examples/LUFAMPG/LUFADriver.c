@@ -19,7 +19,7 @@ void setupHardware(InputMode mode)
 	wdt_disable();
 
 	// We need to disable clock division before initializing the USB hardware.
-	clock_prescale_set(clock_div_1);\
+	clock_prescale_set(clock_div_1);
 
 	// We can then initialize our hardware and peripherals, including the USB stack.
 	// The USB stack should be initialized last.
@@ -111,6 +111,10 @@ void EVENT_USB_Device_ControlRequest(void)
 				{
 					case INPUT_MODE_XINPUT:
 						Endpoint_Write_Control_Stream_LE(&xinputReportData, XINPUT_ENDPOINT_SIZE);
+						break;
+
+					case INPUT_MODE_SWITCH:
+						Endpoint_Write_Control_Stream_LE(&switchReportData, HID_ENDPOINT_SIZE);
 						break;
 
 					case INPUT_MODE_HID:

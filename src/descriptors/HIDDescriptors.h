@@ -86,14 +86,12 @@ static const uint8_t hid_device_descriptor[] =
 static const uint8_t hid_hid_descriptor[] =
 {
 	0x09,        // bLength
-	0x04,        // bDescriptorType (Interface)
-	0x00,        // bInterfaceNumber 0
-	0x00,        // bAlternateSetting
-	0x01,        // bNumEndpoints 1
-	0x03,        // bInterfaceClass
-	0x00,        // bInterfaceSubClass
-	0x00,        // bInterfaceProtocol
-	0x00,        // iInterface (String Index)
+	0x21,        // bDescriptorType (HID)
+	0x11, 0x01,  // bcdHID 1.11
+	0x00,        // bCountryCode
+	0x01,        // bNumDescriptors
+	0x22,        // bDescriptorType[0] (HID)
+	0x5A, 0x00,  // wDescriptorLength[0] 90
 };
 
 static const uint8_t hid_configuration_descriptor[] =
@@ -123,7 +121,7 @@ static const uint8_t hid_configuration_descriptor[] =
 	0x00,        // bCountryCode
 	0x01,        // bNumDescriptors
 	0x22,        // bDescriptorType[0] (HID)
-	0x5A, 0x00,  // wDescriptorLength[0] 90
+	0x51, 0x00,  // wDescriptorLength[0] 81
 
 	0x07,        // bLength
 	0x05,        // bDescriptorType (Endpoint)
@@ -168,18 +166,12 @@ static const uint8_t hid_report_descriptor[] =
 	0x75, 0x08,        //   Report Size (8)
 	0x95, 0x04,        //   Report Count (4)
 	0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
-	0x06, 0x00, 0xFF,  //   Usage Page (Vendor Defined 0xFF00)
-	0x09, 0x20,        //   Usage (0x20)
+	                   //   * PS3 "magic" vendor page *
+	0x06, 0x00, 0xff,  //   Usage Page (Vendor Specific)
+	0x09, 0x20,        //   Unknown
+	0x75, 0x08,        //   Report Size (8)
 	0x95, 0x01,        //   Report Count (1)
-	0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
-
-	// Begin PS3 "magic" vendor page
-	0x06, 0x00, 0xff, // USAGE_PAGE (Vendor Specific)
-	0x09, 0x20, // Unknown
-	0x75, 0x08, // REPORT_SIZE (8)
-	0x95, 0x01, // REPORT_COUNT (1)
-	0xB1, 0x02,        //    Feature (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
-
+	0xB1, 0x02,        //   Feature (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
 	0xC0,              // End Collection
 };
 
