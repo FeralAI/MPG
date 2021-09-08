@@ -11,6 +11,8 @@
 class GamepadStorage
 {
 	public:
+		GamepadStorage();
+
 		void save();
 
 		DpadMode getDpadMode();
