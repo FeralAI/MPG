@@ -2,16 +2,17 @@
  * Example MPG implementation using LUFA for ATmega32U4 boards.
  */
 
+#define HAS_STORAGE true
+#define DEBOUNCE_MILLIS 5
+
 #include <MPG.h>
 #include <LUFA.h>
 #include "LUFADriver.h"
 
-#define GAMEPAD_DEBOUNCE_MILLIS 5
-
 // Define time function for gamepad debouncer
 uint32_t getMillis() { return millis(); }
 
-MPG mpg; // The gamepad instance
+MPG mpg(DEBOUNCE_MILLIS, HAS_STORAGE); // The gamepad instance
 
 void setup()
 {
@@ -20,12 +21,19 @@ void setup()
 	mpg.read();  // Perform an initial button read so we can set input mode
 
 	// Use the inlined `pressed` convenience methods
+	InputMode inputMode = mpg.inputMode;
 	if (mpg.pressedR3())
-		mpg.inputMode = INPUT_MODE_HID;
+		inputMode = INPUT_MODE_HID;
 	else if (mpg.pressedS1())
-		mpg.inputMode = INPUT_MODE_SWITCH;
+		inputMode = INPUT_MODE_SWITCH;
 	else if (mpg.pressedS2())
-		mpg.inputMode = INPUT_MODE_XINPUT;
+		inputMode = INPUT_MODE_XINPUT;
+
+	if (inputMode != mpg.inputMode)
+	{
+		mpg.inputMode = inputMode;
+		mpg.save();
+	}
 
 	// Initialize USB device driver
 	setupHardware(mpg.inputMode);

@@ -313,29 +313,31 @@ void MPG::process()
 
 void MPG::load()
 {
-#if HAS_PERSISTENT_STORAGE == 1
-	inputMode = Storage.getInputMode();
-	if (inputMode > INPUT_MODE_HID)
-		inputMode = DEFAULT_INPUT_MODE;
+	if (hasStorage)
+	{
+		inputMode = Storage.getInputMode();
+		if (inputMode > INPUT_MODE_HID)
+			inputMode = DEFAULT_INPUT_MODE;
 
-	dpadMode = Storage.getDpadMode();
-	if (dpadMode > DPAD_MODE_RIGHT_ANALOG)
-		dpadMode = DEFAULT_DPAD_MODE;
+		dpadMode = Storage.getDpadMode();
+		if (dpadMode > DPAD_MODE_RIGHT_ANALOG)
+			dpadMode = DEFAULT_DPAD_MODE;
 
-	socdMode = Storage.getSOCDMode();
-	if (socdMode > SOCD_MODE_SECOND_INPUT_PRIORITY)
-		socdMode = DEFAULT_SOCD_MODE;
-#endif
+		socdMode = Storage.getSOCDMode();
+		if (socdMode > SOCD_MODE_SECOND_INPUT_PRIORITY)
+			socdMode = DEFAULT_SOCD_MODE;
+	}
 }
 
 void MPG::save()
 {
-#if HAS_PERSISTENT_STORAGE == 1
-	Storage.setInputMode(inputMode);
-	Storage.setDpadMode(dpadMode);
-	Storage.setSOCDMode(socdMode);
-	Storage.save();
-#endif
+	if (hasStorage)
+	{
+		Storage.setInputMode(inputMode);
+		Storage.setDpadMode(dpadMode);
+		Storage.setSOCDMode(socdMode);
+		Storage.save();
+	}
 }
 
 bool MPG::isDpadHotkeyPressed()

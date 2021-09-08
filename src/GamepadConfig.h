@@ -18,8 +18,4 @@
 #define DEFAULT_INPUT_MODE INPUT_MODE_XINPUT
 #endif
 
-#ifndef HAS_PERSISTENT_STORAGE
-#define HAS_PERSISTENT_STORAGE 0
-#endif
-
 #endif

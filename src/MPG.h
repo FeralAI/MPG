@@ -14,14 +14,7 @@
 #include "GamepadDescriptors.h"
 #include "GamepadState.h"
 #include "GamepadDebouncer.h"
-
-#if HAS_PERSISTENT_STORAGE == 1
 #include "GamepadStorage.h"
-#endif
-
-#ifndef GAMEPAD_DEBOUNCE_MILLIS
-#define GAMEPAD_DEBOUNCE_MILLIS 0
-#endif
 
 #define GAMEPAD_DPAD_INPUT_COUNT 4
 #define GAMEPAD_BUTTON_INPUT_COUNT 14	 // Number of normal buttons (not D-pad)
@@ -30,14 +23,18 @@
 class MPG
 {
 	public:
-		MPG()
+		MPG(int debounceMS = 5, bool hasStorage = true)
+			: debounceMS(debounceMS), hasStorage(hasStorage)
 		{
-			#if GAMEPAD_DEBOUNCE_MILLIS > 0
+			if (debounceMS > 0)
+			{
 				for (int i = 0; i < GAMEPAD_DIGITAL_INPUT_COUNT; i++)
 					debouncers[i].setGamepadState(state);
-			#endif
+			}
 		}
 
+		const uint8_t debounceMS;
+		const bool hasStorage;
 		DpadMode dpadMode = DPAD_MODE_DIGITAL;
 		InputMode inputMode = INPUT_MODE_XINPUT;
 		SOCDMode socdMode = SOCD_MODE_UP_PRIORITY;
@@ -215,31 +212,28 @@ class MPG
 
 			return new_dpad;
 		}
-		#if GAMEPAD_DEBOUNCE_MILLIS > 0
-				GamepadDebouncer debouncers[GAMEPAD_DIGITAL_INPUT_COUNT] =
-				{
-					GamepadDebouncer(GAMEPAD_MASK_UP, GAMEPAD_DEBOUNCE_MILLIS, true),
-					GamepadDebouncer(GAMEPAD_MASK_DOWN, GAMEPAD_DEBOUNCE_MILLIS, true),
-					GamepadDebouncer(GAMEPAD_MASK_LEFT, GAMEPAD_DEBOUNCE_MILLIS, true),
-					GamepadDebouncer(GAMEPAD_MASK_RIGHT, GAMEPAD_DEBOUNCE_MILLIS, true),
-					GamepadDebouncer(GAMEPAD_MASK_B1, GAMEPAD_DEBOUNCE_MILLIS, false),
-					GamepadDebouncer(GAMEPAD_MASK_B2, GAMEPAD_DEBOUNCE_MILLIS, false),
-					GamepadDebouncer(GAMEPAD_MASK_B3, GAMEPAD_DEBOUNCE_MILLIS, false),
-					GamepadDebouncer(GAMEPAD_MASK_B4, GAMEPAD_DEBOUNCE_MILLIS, false),
-					GamepadDebouncer(GAMEPAD_MASK_L1, GAMEPAD_DEBOUNCE_MILLIS, false),
-					GamepadDebouncer(GAMEPAD_MASK_R1, GAMEPAD_DEBOUNCE_MILLIS, false),
-					GamepadDebouncer(GAMEPAD_MASK_L2, GAMEPAD_DEBOUNCE_MILLIS, false),
-					GamepadDebouncer(GAMEPAD_MASK_R2, GAMEPAD_DEBOUNCE_MILLIS, false),
-					GamepadDebouncer(GAMEPAD_MASK_S1, GAMEPAD_DEBOUNCE_MILLIS, false),
-					GamepadDebouncer(GAMEPAD_MASK_S2, GAMEPAD_DEBOUNCE_MILLIS, false),
-					GamepadDebouncer(GAMEPAD_MASK_L3, GAMEPAD_DEBOUNCE_MILLIS, false),
-					GamepadDebouncer(GAMEPAD_MASK_R3, GAMEPAD_DEBOUNCE_MILLIS, false),
-					GamepadDebouncer(GAMEPAD_MASK_A1, GAMEPAD_DEBOUNCE_MILLIS, false),
-					GamepadDebouncer(GAMEPAD_MASK_A2, GAMEPAD_DEBOUNCE_MILLIS, false),
-				};
-		#else
-				GamepadDebouncer debouncers[GAMEPAD_DIGITAL_INPUT_COUNT];
-		#endif
+
+		GamepadDebouncer debouncers[GAMEPAD_DIGITAL_INPUT_COUNT] =
+		{
+			GamepadDebouncer(GAMEPAD_MASK_UP, debounceMS, true),
+			GamepadDebouncer(GAMEPAD_MASK_DOWN, debounceMS, true),
+			GamepadDebouncer(GAMEPAD_MASK_LEFT, debounceMS, true),
+			GamepadDebouncer(GAMEPAD_MASK_RIGHT, debounceMS, true),
+			GamepadDebouncer(GAMEPAD_MASK_B1, debounceMS, false),
+			GamepadDebouncer(GAMEPAD_MASK_B2, debounceMS, false),
+			GamepadDebouncer(GAMEPAD_MASK_B3, debounceMS, false),
+			GamepadDebouncer(GAMEPAD_MASK_B4, debounceMS, false),
+			GamepadDebouncer(GAMEPAD_MASK_L1, debounceMS, false),
+			GamepadDebouncer(GAMEPAD_MASK_R1, debounceMS, false),
+			GamepadDebouncer(GAMEPAD_MASK_L2, debounceMS, false),
+			GamepadDebouncer(GAMEPAD_MASK_R2, debounceMS, false),
+			GamepadDebouncer(GAMEPAD_MASK_S1, debounceMS, false),
+			GamepadDebouncer(GAMEPAD_MASK_S2, debounceMS, false),
+			GamepadDebouncer(GAMEPAD_MASK_L3, debounceMS, false),
+			GamepadDebouncer(GAMEPAD_MASK_R3, debounceMS, false),
+			GamepadDebouncer(GAMEPAD_MASK_A1, debounceMS, false),
+			GamepadDebouncer(GAMEPAD_MASK_A2, debounceMS, false),
+		};
 };
 
 #endif

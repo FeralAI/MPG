@@ -1,10 +1,12 @@
-#include <GamepadStorage.h>
 #include <GamepadConfig.h>
+#include <GamepadStorage.h>
 #include <EEPROM.h>
 
-// No-op implmenetations
+#define STORAGE_INPUT_MODE_INDEX 0 // 1 byte
+#define STORAGE_DPAD_MODE_INDEX 1  // 1 byte
+#define STORAGE_SOCD_MODE_INDEX 2  // 1 byte
 
-GamepadStorage::GamepadStorage() { }
+// No-op implmenetations
 
 void GamepadStorage::save() { }
 
