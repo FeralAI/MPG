@@ -8,15 +8,9 @@
 
 #include "GamepadEnums.h"
 
-#define STORAGE_INPUT_MODE_INDEX 0 // 1 byte
-#define STORAGE_DPAD_MODE_INDEX  1 // 1 byte
-#define STORAGE_SOCD_MODE_INDEX  2 // 1 byte
-
 class GamepadStorage
 {
 	public:
-		GamepadStorage();
-
 		void save();
 
 		DpadMode getDpadMode();
