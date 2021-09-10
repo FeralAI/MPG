@@ -24,6 +24,9 @@ void setupHardware(InputMode mode)
 	// We can then initialize our hardware and peripherals, including the USB stack.
 	// The USB stack should be initialized last.
 	USB_Init();
+
+	// Enable interrupts after USB init
+	GlobalInterruptEnable();
 }
 
 void sendReport(void *data, uint8_t size)

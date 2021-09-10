@@ -8,6 +8,8 @@
 
 // No-op implmenetations
 
+GamepadStorage::GamepadStorage() { }
+
 void GamepadStorage::save() { }
 
 // "Real-op" implementations
