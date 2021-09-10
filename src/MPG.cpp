@@ -9,25 +9,12 @@ void MPG::debounce()
 {
 	for (int i = 0; i < GAMEPAD_DIGITAL_INPUT_COUNT; i++)
 	{
-		// Did we detect a change?
 		if (debouncers[i].update())
 		{
-			// Was it a press?
 			if (debouncers[i].rose())
-			{
-				// Dpad or buttons?
-				if (debouncers[i].isDpad)
-					state.dpad |= debouncers[i].inputMask;
-				else
-					state.buttons |= debouncers[i].inputMask;
-			}
+				state.buttons |= debouncers[i].inputMask;
 			else
-			{
-				if (debouncers[i].isDpad)
-					state.dpad &= ~(debouncers[i].inputMask);
-				else
-					state.buttons &= ~(debouncers[i].inputMask);
-			}
+				state.buttons &= ~(debouncers[i].inputMask);
 		}
 	}
 }
@@ -79,7 +66,7 @@ HIDReport *MPG::getHIDReport()
 	hidReport.rx = state.rx >> 8;
 	hidReport.ry = state.ry >> 8;
 
-	switch (state.dpad & (GAMEPAD_MASK_UP | GAMEPAD_MASK_DOWN | GAMEPAD_MASK_LEFT | GAMEPAD_MASK_RIGHT))
+	switch (state.buttons & GAMEPAD_MASK_DPAD)
 	{
 		case GAMEPAD_MASK_UP:                        hidReport.hat = HID_HAT_UP;        break;
 		case GAMEPAD_MASK_UP | GAMEPAD_MASK_RIGHT:   hidReport.hat = HID_HAT_UPRIGHT;   break;
@@ -130,7 +117,7 @@ SwitchReport *MPG::getSwitchReport()
 	switchReport.rx = state.rx >> 8;
 	switchReport.ry = state.ry >> 8;
 
-	switch (state.dpad & (GAMEPAD_MASK_UP | GAMEPAD_MASK_DOWN | GAMEPAD_MASK_LEFT | GAMEPAD_MASK_RIGHT))
+	switch (state.buttons & GAMEPAD_MASK_DPAD)
 	{
 		case GAMEPAD_MASK_UP:                        switchReport.hat = SWITCH_HAT_UP;        break;
 		case GAMEPAD_MASK_UP | GAMEPAD_MASK_RIGHT:   switchReport.hat = SWITCH_HAT_UPRIGHT;   break;
@@ -186,11 +173,15 @@ XInputReport *MPG::getXInputReport()
 	xinputReport.ry = ~(state.ry) + -32768;
 
 	// Convert button states
-	xinputReport.buttons1 = state.dpad
-		| (pressedS2() ? XBOX_MASK_START : 0)
-		| (pressedS1() ? XBOX_MASK_BACK  : 0)
-		| (pressedL3() ? XBOX_MASK_LS    : 0)
-		| (pressedR3() ? XBOX_MASK_RS    : 0)
+	xinputReport.buttons1 = 0
+		| (pressedUp()    ? XBOX_MASK_UP    : 0)
+		| (pressedDown()  ? XBOX_MASK_DOWN  : 0)
+		| (pressedLeft()  ? XBOX_MASK_LEFT  : 0)
+		| (pressedRight() ? XBOX_MASK_RIGHT : 0)
+		| (pressedS2()    ? XBOX_MASK_START : 0)
+		| (pressedS1()    ? XBOX_MASK_BACK  : 0)
+		| (pressedL3()    ? XBOX_MASK_LS    : 0)
+		| (pressedR3()    ? XBOX_MASK_RS    : 0)
 	;
 
 	xinputReport.buttons2 = 0
@@ -211,8 +202,8 @@ XInputReport *MPG::getXInputReport()
 	}
 	else
 	{
-		xinputReport.lt = (state.buttons & GAMEPAD_MASK_L2) ? 0xFF : 0;
-		xinputReport.rt = (state.buttons & GAMEPAD_MASK_R2) ? 0xFF : 0;
+		xinputReport.lt = pressedL2() ? 0xFF : 0;
+		xinputReport.rt = pressedR2() ? 0xFF : 0;
 	}
 
 	return &xinputReport;
@@ -221,64 +212,57 @@ XInputReport *MPG::getXInputReport()
 GamepadHotkey MPG::hotkey()
 {
 	GamepadHotkey action = HOTKEY_NONE;
-	if (isDpadHotkeyPressed())
+	if (pressedF1())
 	{
 		DpadMode lastDpadMode = dpadMode;
 		if (pressedLeft())
 		{
 			action = HOTKEY_DPAD_LEFT_ANALOG;
 			dpadMode = DPAD_MODE_LEFT_ANALOG;
-			state.dpad = 0;
-			state.buttons &= ~(GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
+			state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
 		}
 		else if (pressedRight())
 		{
 			action = HOTKEY_DPAD_RIGHT_ANALOG;
 			dpadMode = DPAD_MODE_RIGHT_ANALOG;
-			state.dpad = 0;
-			state.buttons &= ~(GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
+			state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
 		}
 		else if (pressedDown())
 		{
 			action = HOTKEY_DPAD_DIGITAL;
 			dpadMode = DPAD_MODE_DIGITAL;
-			state.dpad = 0;
-			state.buttons &= ~(GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
+			state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
 		}
 		else if (pressedUp())
 		{
 			action = HOTKEY_HOME_BUTTON;
-			state.dpad = 0;
-			state.buttons &= ~(GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
+			state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
 			state.buttons |= GAMEPAD_MASK_A1; // Press the Home button
 		}
 
 		if (lastDpadMode != dpadMode)
 			save();
 	}
-	else if (isSOCDHotkeyPressed())
+	else if (pressedF2())
 	{
 		SOCDMode lastSOCDMode = socdMode;
 		if (pressedUp())
 		{
 			action = HOTKEY_SOCD_UP_PRIORITY;
 			socdMode = SOCD_MODE_UP_PRIORITY;
-			state.dpad = 0;
-			state.buttons &= ~(GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
+			state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
 		}
 		else if (pressedDown())
 		{
 			action = HOTKEY_SOCD_NEUTRAL;
 			socdMode = SOCD_MODE_NEUTRAL;
-			state.dpad = 0;
-			state.buttons &= ~(GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
+			state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
 		}
 		else if (pressedLeft())
 		{
 			action = HOTKEY_SOCD_LAST_INPUT;
 			socdMode = SOCD_MODE_SECOND_INPUT_PRIORITY;
-			state.dpad = 0;
-			state.buttons &= ~(GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
+			state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
 		}
 
 		if (lastSOCDMode != socdMode)
@@ -288,25 +272,35 @@ GamepadHotkey MPG::hotkey()
 	return action;
 }
 
+bool MPG::pressedF1()
+{
+	return (state.buttons & (GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2)) == (GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
+}
+
+bool MPG::pressedF2()
+{
+	return (state.buttons & (GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3)) == (GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
+}
+
 void MPG::process()
 {
-	state.dpad = runSOCDCleaner(socdMode, state.dpad);
+	uint8_t dpadValue = runSOCDCleaner(socdMode, (state.buttons & GAMEPAD_MASK_DPAD));
+	state.buttons &= ~GAMEPAD_MASK_DPAD;
 
 	switch (dpadMode)
 	{
 		case DPAD_MODE_LEFT_ANALOG:
-			state.lx = dpadToAnalogX(state.dpad);
-			state.ly = dpadToAnalogY(state.dpad);
-			state.dpad = 0;
+			state.lx = dpadToAnalogX(dpadValue);
+			state.ly = dpadToAnalogY(dpadValue);
 			break;
 
 		case DPAD_MODE_RIGHT_ANALOG:
-			state.rx = dpadToAnalogX(state.dpad);
-			state.ry = dpadToAnalogY(state.dpad);
-			state.dpad = 0;
+			state.rx = dpadToAnalogX(dpadValue);
+			state.ry = dpadToAnalogY(dpadValue);
 			break;
 
 		default:
+			state.buttons |= dpadValue;
 			break;
 	}
 }
@@ -315,15 +309,15 @@ void MPG::load()
 {
 	if (hasStorage)
 	{
-		inputMode = Storage.getInputMode();
+		inputMode = GamepadStore.getInputMode();
 		if (inputMode > INPUT_MODE_HID)
 			inputMode = DEFAULT_INPUT_MODE;
 
-		dpadMode = Storage.getDpadMode();
+		dpadMode = GamepadStore.getDpadMode();
 		if (dpadMode > DPAD_MODE_RIGHT_ANALOG)
 			dpadMode = DEFAULT_DPAD_MODE;
 
-		socdMode = Storage.getSOCDMode();
+		socdMode = GamepadStore.getSOCDMode();
 		if (socdMode > SOCD_MODE_SECOND_INPUT_PRIORITY)
 			socdMode = DEFAULT_SOCD_MODE;
 	}
@@ -333,21 +327,9 @@ void MPG::save()
 {
 	if (hasStorage)
 	{
-		Storage.setInputMode(inputMode);
-		Storage.setDpadMode(dpadMode);
-		Storage.setSOCDMode(socdMode);
-		Storage.save();
+		GamepadStore.setInputMode(inputMode);
+		GamepadStore.setDpadMode(dpadMode);
+		GamepadStore.setSOCDMode(socdMode);
+		GamepadStore.save();
 	}
-}
-
-bool MPG::isDpadHotkeyPressed()
-{
-	// Select + Start
-	return (state.buttons & (GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2)) == (GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
-}
-
-bool MPG::isSOCDHotkeyPressed()
-{
-	// LS + RS
-	return (state.buttons & (GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3)) == (GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
 }

@@ -1,8 +1,8 @@
-/* 
+/*
  * SPDX-License-Identifier: MIT
  * SPDX-FileCopyrightText: Copyright (c) 2021 Jason Skuby (mytechtoybox.com)
  * SPDX-FileCopyrightText: Copyright (c) 2013 thomasfredericks
- * 
+ *
  * Debouncer class ported from the Arduino Bounce2 library (MIT license).
  */
 
@@ -31,11 +31,10 @@ class GamepadDebouncer
 
 	public:
 		GamepadDebouncer();
-		GamepadDebouncer(uint16_t m, uint16_t i = 0, bool d = false)
-				: inputMask(m), isDpad(d), intervalMillis(i) {}
+		GamepadDebouncer(uint32_t m, uint16_t i = 0)
+				: inputMask(m), intervalMillis(i) {}
 
-		uint16_t inputMask;
-		bool isDpad;
+		uint32_t inputMask;
 
 		__attribute__((always_inline)) inline void setGamepadState(GamepadState &gamepadState)
 		{
