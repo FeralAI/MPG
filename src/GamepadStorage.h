@@ -25,6 +25,6 @@ class GamepadStorage
 		void setSOCDMode(SOCDMode mode);
 };
 
-static GamepadStorage Storage;
+static GamepadStorage GamepadStore;
 
 #endif

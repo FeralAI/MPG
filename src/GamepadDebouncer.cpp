@@ -23,11 +23,7 @@ void GamepadDebouncer::begin()
 		setStateFlag(DEBOUNCED_STATE | UNSTABLE_STATE);
 	}
 
-#ifdef BOUNCE_LOCK_OUT
-	previousMillis = 0;
-#else
 	previousMillis = getMillis();
-#endif
 }
 
 bool GamepadDebouncer::update()
@@ -88,8 +84,5 @@ bool GamepadDebouncer::fell() const
 
 bool GamepadDebouncer::readCurrentState()
 {
-	if (isDpad)
-		return gamepadState->dpad & inputMask;
-	else
-		return gamepadState->buttons & inputMask;
+	return gamepadState->buttons & inputMask;
 }

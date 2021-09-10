@@ -64,25 +64,22 @@ void MPG::read()
 	state.rt = 0;
 
 	// Gather raw inputs
-	state.dpad = 0
-		| ((ports[PORTF_INDEX] >> PORT_PIN_UP    & 1) ? GAMEPAD_MASK_UP    : 0)
-		| ((ports[PORTF_INDEX] >> PORT_PIN_DOWN  & 1) ? GAMEPAD_MASK_DOWN  : 0)
-		| ((ports[PORTF_INDEX] >> PORT_PIN_LEFT  & 1) ? GAMEPAD_MASK_LEFT  : 0)
-		| ((ports[PORTF_INDEX] >> PORT_PIN_RIGHT & 1) ? GAMEPAD_MASK_RIGHT : 0)
-	;
-
 	state.buttons = 0
-		| ((ports[PORTD_INDEX] >> PORT_PIN_K1 & 1)     ? GAMEPAD_MASK_B1 : 0) // Generic: K1, Switch: B, Xbox: A
-		| ((ports[PORTD_INDEX] >> PORT_PIN_K2 & 1)     ? GAMEPAD_MASK_B2 : 0) // Generic: K2, Switch: A, Xbox: B
-		| ((ports[PORTD_INDEX] >> PORT_PIN_P1 & 1)     ? GAMEPAD_MASK_B3 : 0) // Generic: P1, Switch: Y, Xbox: X
-		| ((ports[PORTD_INDEX] >> PORT_PIN_P2 & 1)     ? GAMEPAD_MASK_B4 : 0) // Generic: P2, Switch: X, Xbox: Y
-		| ((ports[PORTD_INDEX] >> PORT_PIN_P4 & 1)     ? GAMEPAD_MASK_L1 : 0) // Generic: P4, Switch: L, Xbox: LB
-		| ((ports[PORTB_INDEX] >> PORT_PIN_P3 & 1)     ? GAMEPAD_MASK_R1 : 0) // Generic: P3, Switch: R, Xbox: RB
-		| ((ports[PORTD_INDEX] >> PORT_PIN_K4 & 1)     ? GAMEPAD_MASK_L2 : 0) // Generic: K4, Switch: ZL, Xbox: LT (Digital)
-		| ((ports[PORTB_INDEX] >> PORT_PIN_K3 & 1)     ? GAMEPAD_MASK_R2 : 0) // Generic: K3, Switch: ZR, Xbox: RT (Digital)
+		| ((ports[PORTF_INDEX] >> PORT_PIN_UP     & 1) ? GAMEPAD_MASK_UP    : 0)
+		| ((ports[PORTF_INDEX] >> PORT_PIN_DOWN   & 1) ? GAMEPAD_MASK_DOWN  : 0)
+		| ((ports[PORTF_INDEX] >> PORT_PIN_LEFT   & 1) ? GAMEPAD_MASK_LEFT  : 0)
+		| ((ports[PORTF_INDEX] >> PORT_PIN_RIGHT  & 1) ? GAMEPAD_MASK_RIGHT : 0)
+		| ((ports[PORTD_INDEX] >> PORT_PIN_K1     & 1) ? GAMEPAD_MASK_B1 : 0) // Generic: K1, Switch: B, Xbox: A
+		| ((ports[PORTD_INDEX] >> PORT_PIN_K2     & 1) ? GAMEPAD_MASK_B2 : 0) // Generic: K2, Switch: A, Xbox: B
+		| ((ports[PORTD_INDEX] >> PORT_PIN_P1     & 1) ? GAMEPAD_MASK_B3 : 0) // Generic: P1, Switch: Y, Xbox: X
+		| ((ports[PORTD_INDEX] >> PORT_PIN_P2     & 1) ? GAMEPAD_MASK_B4 : 0) // Generic: P2, Switch: X, Xbox: Y
+		| ((ports[PORTD_INDEX] >> PORT_PIN_P4     & 1) ? GAMEPAD_MASK_L1 : 0) // Generic: P4, Switch: L, Xbox: LB
+		| ((ports[PORTB_INDEX] >> PORT_PIN_P3     & 1) ? GAMEPAD_MASK_R1 : 0) // Generic: P3, Switch: R, Xbox: RB
+		| ((ports[PORTD_INDEX] >> PORT_PIN_K4     & 1) ? GAMEPAD_MASK_L2 : 0) // Generic: K4, Switch: ZL, Xbox: LT (Digital)
+		| ((ports[PORTB_INDEX] >> PORT_PIN_K3     & 1) ? GAMEPAD_MASK_R2 : 0) // Generic: K3, Switch: ZR, Xbox: RT (Digital)
 		| ((ports[PORTB_INDEX] >> PORT_PIN_SELECT & 1) ? GAMEPAD_MASK_S1 : 0) // Generic: Select, Switch: -, Xbox: View
-		| ((ports[PORTB_INDEX] >> PORT_PIN_START & 1)  ? GAMEPAD_MASK_S2 : 0) // Generic: Start, Switch: +, Xbox: Menu
-		| ((ports[PORTB_INDEX] >> PORT_PIN_LS & 1)     ? GAMEPAD_MASK_L3 : 0) // All: Left Stick Click
-		| ((ports[PORTB_INDEX] >> PORT_PIN_RS & 1)     ? GAMEPAD_MASK_R3 : 0) // All: Right Stick Click
+		| ((ports[PORTB_INDEX] >> PORT_PIN_START  & 1) ? GAMEPAD_MASK_S2 : 0) // Generic: Start, Switch: +, Xbox: Menu
+		| ((ports[PORTB_INDEX] >> PORT_PIN_LS     & 1) ? GAMEPAD_MASK_L3 : 0) // All: Left Stick Click
+		| ((ports[PORTB_INDEX] >> PORT_PIN_RS     & 1) ? GAMEPAD_MASK_R3 : 0) // All: Right Stick Click
 	;
 }

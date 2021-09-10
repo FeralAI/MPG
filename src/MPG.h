@@ -16,8 +16,6 @@
 #include "GamepadDebouncer.h"
 #include "GamepadStorage.h"
 
-#define GAMEPAD_DPAD_INPUT_COUNT 4
-#define GAMEPAD_BUTTON_INPUT_COUNT 14	 // Number of normal buttons (not D-pad)
 #define GAMEPAD_DIGITAL_INPUT_COUNT 18 // Total number of buttons, including D-pad
 
 class MPG
@@ -33,14 +31,36 @@ class MPG
 			}
 		}
 
+		/**
+		 * @brief The button debounce time in milliseconds. A value of 0 disables debouncing.
+		 */
 		const uint8_t debounceMS;
+
+		/**
+		 * @brief Flag to indicate the gamepad has storage support.
+		 */
 		const bool hasStorage;
+
+		/**
+		 * @brief The current D-pad mode.
+		 */
 		DpadMode dpadMode = DPAD_MODE_DIGITAL;
+
+		/**
+		 * @brief The current input mode.
+		 */
 		InputMode inputMode = INPUT_MODE_XINPUT;
+
+		/**
+		 * @brief The current SOCD cleaning mode.
+		 */
 		SOCDMode socdMode = SOCD_MODE_UP_PRIORITY;
+
+		/**
+		 * @brief The current gamepad state object.
+		 */
 		GamepadState state =
 		{
-			.dpad = 0,
 			.buttons = 0,
 			.lx = GAMEPAD_JOYSTICK_MID,
 			.ly = GAMEPAD_JOYSTICK_MID,
@@ -50,69 +70,112 @@ class MPG
 			.rt = 0,
 		};
 
+		/**
+		 * @brief Flag to indicate analog trigger support.
+		 */
 		bool hasAnalogTriggers = false;
+
+		/**
+		 * @brief Flag to indicate Left analog stick support.
+		 */
 		bool hasLeftAnalogStick = false;
+
+		/**
+		 * @brief Flag to indicate Right analog stick support.
+		 */
 		bool hasRightAnalogStick = false;
 
 		/**
-		 * Load the saved configuration from persitent storage
+		 * @brief Load the saved configuration from persitent storage
 		 */
 		virtual void load();
 
 		/**
-		 * Save the current configuration to persitent storage
+		 * @brief Save the current configuration to persitent storage
 		 */
 		virtual void save();
 
 		/**
-		 * Perform pin setup and any other initialization the board requires
+		 * @brief Perform pin setup and any other initialization the board requires
 		 */
 		virtual void setup();
 
 		/**
-		 * Retrieve the inputs and save to the current state
+		 * @brief Retrieve the inputs and save to the current state
 		 */
 		virtual void read();
 
 		/**
-		 * Checks and executes any hotkey being pressed
+		 * @brief Checks and executes any hotkey being pressed.
+		 *
+		 * @return GamepadHotkey The selected hotkey action
 		 */
 		virtual GamepadHotkey hotkey();
 
 		/**
-		 * Run debouncing algorithm against current state inputs
+		 * @brief Run debouncing algorithm against current state inputs
 		 */
 		void debounce();
 
 		/**
-		 * Process the inputs before sending state to host
+		 * @brief Process the inputs before sending state to host
 		 */
 		void process();
 
+		/**
+		 * @brief Generate USB report for the current input mode.
+		 *
+		 * @return uint8_t* Report data pointer
+		 */
 		uint8_t *getReport();
+
+		/**
+		 * @brief Get the size of the USB report for the current input mode.
+		 *
+		 * @return uint8_t Report data size
+		 */
 		uint8_t getReportSize();
 
+		/**
+		 * @brief Generate USB report for HID mode.
+		 *
+		 * @return HIDReport* HID report pointer
+		 */
 		HIDReport *getHIDReport();
+
+		/**
+		 * @brief Generate USB report for Switch mode.
+		 *
+		 * @return SwitchReport* Switch report pointer
+		 */
 		SwitchReport *getSwitchReport();
+
+		/**
+		 * @brief Generate USB report for XInput mode.
+		 *
+		 * @return XInputReport* XInput report pointer.
+		 */
 		XInputReport *getXInputReport();
 
 		/**
-		 * Returns if the function button/hotkey is pressed, override in derived board class
+		 * @brief Check for F1 button press. Can override in derived board class.
 		 */
-		virtual bool isDpadHotkeyPressed();
+		virtual bool pressedF1();
 
 		/**
-		 * Returns if the function button/hotkey is pressed, override in derived board class
+		 * @brief Check for F1 button press. Can override in derived board class.
 		 */
-		virtual bool isSOCDHotkeyPressed();
+		virtual bool pressedF2();
 
-		inline bool __attribute__((always_inline)) pressedDpad(const uint8_t mask)    { return (state.dpad & mask) == mask; }
+		/**
+		 * @brief Check for a button press.
+		 */
 		inline bool __attribute__((always_inline)) pressedButton(const uint32_t mask) { return (state.buttons & mask) == mask; }
 
-		inline bool __attribute__((always_inline)) pressedUp()    { return pressedDpad(GAMEPAD_MASK_UP); }
-		inline bool __attribute__((always_inline)) pressedDown()  { return pressedDpad(GAMEPAD_MASK_DOWN); }
-		inline bool __attribute__((always_inline)) pressedLeft()  { return pressedDpad(GAMEPAD_MASK_LEFT); }
-		inline bool __attribute__((always_inline)) pressedRight() { return pressedDpad(GAMEPAD_MASK_RIGHT); }
+		inline bool __attribute__((always_inline)) pressedUp()    { return pressedButton(GAMEPAD_MASK_UP); }
+		inline bool __attribute__((always_inline)) pressedDown()  { return pressedButton(GAMEPAD_MASK_DOWN); }
+		inline bool __attribute__((always_inline)) pressedLeft()  { return pressedButton(GAMEPAD_MASK_LEFT); }
+		inline bool __attribute__((always_inline)) pressedRight() { return pressedButton(GAMEPAD_MASK_RIGHT); }
 		inline bool __attribute__((always_inline)) pressedB1()    { return pressedButton(GAMEPAD_MASK_B1); }
 		inline bool __attribute__((always_inline)) pressedB2()    { return pressedButton(GAMEPAD_MASK_B2); }
 		inline bool __attribute__((always_inline)) pressedB3()    { return pressedButton(GAMEPAD_MASK_B3); }
@@ -129,110 +192,29 @@ class MPG
 		inline bool __attribute__((always_inline)) pressedA2()    { return pressedButton(GAMEPAD_MASK_A2); }
 
 	protected:
-		// Convert the horizontal GamepadState dpad axis value into an analog value
-		inline uint16_t dpadToAnalogX(uint8_t dpad)
-		{
-			switch (dpad & (GAMEPAD_MASK_LEFT | GAMEPAD_MASK_RIGHT))
-			{
-			case GAMEPAD_MASK_LEFT:
-				return GAMEPAD_JOYSTICK_MIN;
-			case GAMEPAD_MASK_RIGHT:
-				return GAMEPAD_JOYSTICK_MAX;
-			default:
-				return GAMEPAD_JOYSTICK_MID;
-			}
-		}
-
-		// Convert the vertical GamepadState dpad axis value into an analog value
-		inline uint16_t dpadToAnalogY(uint8_t dpad)
-		{
-			switch (dpad & (GAMEPAD_MASK_UP | GAMEPAD_MASK_DOWN))
-			{
-			case GAMEPAD_MASK_UP:
-				return GAMEPAD_JOYSTICK_MIN;
-			case GAMEPAD_MASK_DOWN:
-				return GAMEPAD_JOYSTICK_MAX;
-			default:
-				return GAMEPAD_JOYSTICK_MID;
-			}
-		}
-
-		inline uint8_t runSOCDCleaner(SOCDMode mode, uint8_t dpad)
-		{
-			static DpadDirection last_ud = DIRECTION_NONE;
-			static DpadDirection last_lr = DIRECTION_NONE;
-			uint8_t new_dpad = 0;
-
-			switch (dpad & (GAMEPAD_MASK_UP | GAMEPAD_MASK_DOWN))
-			{
-				case (GAMEPAD_MASK_UP | GAMEPAD_MASK_DOWN):
-					if (mode == SOCD_MODE_UP_PRIORITY)
-					{
-						new_dpad |= GAMEPAD_MASK_UP;
-						last_ud = DIRECTION_UP;
-					}
-					else if (mode == SOCD_MODE_SECOND_INPUT_PRIORITY && last_ud != DIRECTION_NONE)
-						new_dpad |= (last_ud == DIRECTION_UP) ? GAMEPAD_MASK_DOWN : GAMEPAD_MASK_UP;
-					else
-						last_ud = DIRECTION_NONE;
-					break;
-				case GAMEPAD_MASK_UP:
-					new_dpad |= GAMEPAD_MASK_UP;
-					last_ud = DIRECTION_UP;
-					break;
-				case GAMEPAD_MASK_DOWN:
-					new_dpad |= GAMEPAD_MASK_DOWN;
-					last_ud = DIRECTION_DOWN;
-					break;
-				default:
-					last_ud = DIRECTION_NONE;
-					break;
-			}
-
-			switch (dpad & (GAMEPAD_MASK_LEFT | GAMEPAD_MASK_RIGHT))
-			{
-				case (GAMEPAD_MASK_LEFT | GAMEPAD_MASK_RIGHT):
-					if (mode == SOCD_MODE_SECOND_INPUT_PRIORITY && last_lr != DIRECTION_NONE)
-						new_dpad |= (last_lr == DIRECTION_LEFT) ? GAMEPAD_MASK_RIGHT : GAMEPAD_MASK_LEFT;
-					else
-						last_lr = DIRECTION_NONE;
-					break;
-				case GAMEPAD_MASK_LEFT:
-					new_dpad |= GAMEPAD_MASK_LEFT;
-					last_lr = DIRECTION_LEFT;
-					break;
-				case GAMEPAD_MASK_RIGHT:
-					new_dpad |= GAMEPAD_MASK_RIGHT;
-					last_lr = DIRECTION_RIGHT;
-					break;
-				default:
-					last_lr = DIRECTION_NONE;
-					break;
-			}
-
-			return new_dpad;
-		}
-
+		/**
+		 * @brief Button debouncer instances.
+		 */
 		GamepadDebouncer debouncers[GAMEPAD_DIGITAL_INPUT_COUNT] =
 		{
-			GamepadDebouncer(GAMEPAD_MASK_UP, debounceMS, true),
-			GamepadDebouncer(GAMEPAD_MASK_DOWN, debounceMS, true),
-			GamepadDebouncer(GAMEPAD_MASK_LEFT, debounceMS, true),
-			GamepadDebouncer(GAMEPAD_MASK_RIGHT, debounceMS, true),
-			GamepadDebouncer(GAMEPAD_MASK_B1, debounceMS, false),
-			GamepadDebouncer(GAMEPAD_MASK_B2, debounceMS, false),
-			GamepadDebouncer(GAMEPAD_MASK_B3, debounceMS, false),
-			GamepadDebouncer(GAMEPAD_MASK_B4, debounceMS, false),
-			GamepadDebouncer(GAMEPAD_MASK_L1, debounceMS, false),
-			GamepadDebouncer(GAMEPAD_MASK_R1, debounceMS, false),
-			GamepadDebouncer(GAMEPAD_MASK_L2, debounceMS, false),
-			GamepadDebouncer(GAMEPAD_MASK_R2, debounceMS, false),
-			GamepadDebouncer(GAMEPAD_MASK_S1, debounceMS, false),
-			GamepadDebouncer(GAMEPAD_MASK_S2, debounceMS, false),
-			GamepadDebouncer(GAMEPAD_MASK_L3, debounceMS, false),
-			GamepadDebouncer(GAMEPAD_MASK_R3, debounceMS, false),
-			GamepadDebouncer(GAMEPAD_MASK_A1, debounceMS, false),
-			GamepadDebouncer(GAMEPAD_MASK_A2, debounceMS, false),
+			GamepadDebouncer(GAMEPAD_MASK_UP, debounceMS),
+			GamepadDebouncer(GAMEPAD_MASK_DOWN, debounceMS),
+			GamepadDebouncer(GAMEPAD_MASK_LEFT, debounceMS),
+			GamepadDebouncer(GAMEPAD_MASK_RIGHT, debounceMS),
+			GamepadDebouncer(GAMEPAD_MASK_B1, debounceMS),
+			GamepadDebouncer(GAMEPAD_MASK_B2, debounceMS),
+			GamepadDebouncer(GAMEPAD_MASK_B3, debounceMS),
+			GamepadDebouncer(GAMEPAD_MASK_B4, debounceMS),
+			GamepadDebouncer(GAMEPAD_MASK_L1, debounceMS),
+			GamepadDebouncer(GAMEPAD_MASK_R1, debounceMS),
+			GamepadDebouncer(GAMEPAD_MASK_L2, debounceMS),
+			GamepadDebouncer(GAMEPAD_MASK_R2, debounceMS),
+			GamepadDebouncer(GAMEPAD_MASK_S1, debounceMS),
+			GamepadDebouncer(GAMEPAD_MASK_S2, debounceMS),
+			GamepadDebouncer(GAMEPAD_MASK_L3, debounceMS),
+			GamepadDebouncer(GAMEPAD_MASK_R3, debounceMS),
+			GamepadDebouncer(GAMEPAD_MASK_A1, debounceMS),
+			GamepadDebouncer(GAMEPAD_MASK_A2, debounceMS),
 		};
 };
 
