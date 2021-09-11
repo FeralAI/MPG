@@ -9,8 +9,6 @@
 #include <LUFA.h>
 #include "LUFADriver.h"
 
-uint32_t getMillis() { return millis(); } // Define time function for gamepad debouncer
-
 MPGS mpg(DEBOUNCE_MILLIS); // The gamepad instance
 
 void setup()
