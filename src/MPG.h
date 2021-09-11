@@ -127,35 +127,35 @@ class MPG
 		 *
 		 * @return uint8_t* Report data pointer
 		 */
-		uint8_t *getReport();
+		void *getReport();
 
 		/**
 		 * @brief Get the size of the USB report for the current input mode.
 		 *
 		 * @return uint8_t Report data size
 		 */
-		uint8_t getReportSize();
+		uint16_t getReportSize();
 
 		/**
 		 * @brief Generate USB report for HID mode.
 		 *
 		 * @return HIDReport* HID report pointer
 		 */
-		HIDReport *getHIDReport();
+		HIDReport getHIDReport();
 
 		/**
 		 * @brief Generate USB report for Switch mode.
 		 *
 		 * @return SwitchReport* Switch report pointer
 		 */
-		SwitchReport *getSwitchReport();
+		SwitchReport getSwitchReport();
 
 		/**
 		 * @brief Generate USB report for XInput mode.
 		 *
-		 * @return XInputReport* XInput report pointer.
+		 * @return XInputReport XInput report pointer.
 		 */
-		XInputReport *getXInputReport();
+		XInputReport getXInputReport();
 
 		/**
 		 * @brief Check for F1 button press. Can override in derived board class.

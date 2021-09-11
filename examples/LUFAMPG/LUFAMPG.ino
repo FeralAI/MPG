@@ -9,8 +9,7 @@
 #include <LUFA.h>
 #include "LUFADriver.h"
 
-// Define time function for gamepad debouncer
-uint32_t getMillis() { return millis(); }
+uint32_t getMillis() { return millis(); } // Define time function for gamepad debouncer
 
 MPG mpg(DEBOUNCE_MILLIS, HAS_STORAGE); // The gamepad instance
 
@@ -44,12 +43,11 @@ void loop()
 	static const uint8_t reportSize = mpg.getReportSize();  // Get report size from Gamepad instance
 	static void *report;                                    // Pointer to our HID report
 	static GamepadHotkey hotkey;                            // The last hotkey pressed
-	static uint8_t lastReport[64] = { };                    // Use for report comparisons, better latency when only send on change
 
 	mpg.read();                                             // Read raw inputs
 	mpg.debounce();                                         // Run debouncing if enabled
-	hotkey = mpg.hotkey();                                  // Check hotkey presses (dpad mode, socd mode, etc.), hotkey enum returned
-	mpg.process();                                          // Perform final input processing before report conversion
+	hotkey = mpg.hotkey();                                  // Check hotkey presses (D-pad mode, SOCD mode, etc.), hotkey enum returned
+	mpg.process();                                          // Perform final input processing (SOCD cleaning, LS/RS emulation, etc.)
 	report = mpg.getReport();                               // Convert to USB report
 	sendReport(report, reportSize);                         // Send it!
 }
