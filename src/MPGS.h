@@ -12,13 +12,10 @@
 class MPGS : public MPG
 {
 	public:
-		MPGS(int debounceMS = 5) : MPG(debounceMS)
+		MPGS(int debounceMS = 5, GamepadStorage *storage = &GamepadStore)
+			: MPG(debounceMS), mpgStorage(storage)
 		{
-			if (debounceMS > 0)
-			{
-				for (int i = 0; i < GAMEPAD_DIGITAL_INPUT_COUNT; i++)
-					debouncers[i].setGamepadState(state);
-			}
+
 		}
 
 		/**
@@ -37,6 +34,9 @@ class MPGS : public MPG
 		 * @brief Save the current configuration to persitent storage if changed.
 		 */
 		virtual void save();
+
+	protected:
+		GamepadStorage *mpgStorage;
 };
 
 #endif
