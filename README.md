@@ -9,9 +9,9 @@ MPG is a C++ library for managing, manipulating and converting inputs into a usa
 * Emulate Left and Right analog stick movement with digital (D-pad) inputs
 * Support a variety of SOCD cleaning methods to prevent invalid directional inputs (finger guns at you /r/fightsticks)
 
-## The MPG Class
+## Usage
 
-The heart of the library is the `MPG` class, and more specifically the virtual `MPG::setup()` and `MPG::read()` class methods that require implementation in your project. Use the `setup()` method for things like initializing microcontroller pins, performing analog calibration, etc., and the `read()` method to implement your platform-specific logic to fill the `MPG.state` member variable. That `state` variable is then used in other class methods for input processing (debouncing, SOCD cleaning, etc.) and to generate USB report data for the selected input type. Once implemented, typical usage of MPG will look kind of like this:
+There are two gamepad classes available: `MPG` and `MPGS`. The `MPG` class is the base class with all of the input handling and report conversion methods, while `MPGS` extends the base class with some additional methods for persisting gamepad options. The main file of an MPG application will look something like this:
 
 ```c++
 /*
@@ -20,22 +20,29 @@ The heart of the library is the `MPG` class, and more specifically the virtual `
 
 #define GAMEPAD_DEBOUNCE_MILLIS 5
 
-#include <MPG.h>
+#include <MPGS.h>
 
-MPG mpg;
+MPGS mpg(GAMEPAD_DEBOUNCE_MILLIS);
 
 void setup() {
   mpg.setup(); // Runs your custom setup logic
-  mpg.load();  // Get saved options if enabled
+  mpg.load();  // Load saved input mode, D-pad and SOCD options (MPGS class only)
   mpg.read();  // Perform an initial button read so we can set input mode
 
   // Use the inlined `pressed` convenience methods
+  InputMode inputMode = mpg.inputMode;
   if (mpg.pressedR3())
-    mpg.inputMode = INPUT_MODE_HID;
+    inputMode = INPUT_MODE_HID;
   else if (mpg.pressedS1())
-    mpg.inputMode = INPUT_MODE_SWITCH;
+    inputMode = INPUT_MODE_SWITCH;
   else if (mpg.pressedS2())
-    mpg.inputMode = INPUT_MODE_XINPUT;
+    inputMode = INPUT_MODE_XINPUT;
+
+  if (inputMode != mpg.inputMode)
+  {
+    mpg.inputMode = inputMode;
+    mpg.save(); // Input mode changed...better save it! (MPGS class only)
+  }
 
   // TODO: Add your USB initialization logic here, something like:
   // setupHardware(mpg.inputMode);
@@ -58,20 +65,19 @@ void loop() {
 
 ```
 
-## Implementation Details
+### MPG Class
 
-MPG provides some declarations and virtual methods that require implementation in order for the library to function correctly. A basic implementation (no debouncing, no storage) requires just two methods to be implemented:
-
-### Required Implementation
+MPG provides some declarations and virtual methods that require implementation in order for the library to function correctly. A basic `MPG` class implementation requires just three methods to be defined:
 
 * **MPG::setup()** - Use to configure pins, calibrate analog, etc.
 * **MPG::read()** - Use to fill the `MPG.state` class member, which is then used in other class methods
+* **GamepadDebouncer::getMillis()** - Used to get timing for checking debounce state (can be no-op if `debounceMS` set to `0`)
 
-A basic `MPG` class implementation in Arduino-land for a Leonardo might look like this:
+An optimized Arduino `MPG` class implementation for a Leonardo might look like this:
 
 ```c++
 /*
- * LeoPad.cpp
+ * Gamepad.cpp
  *
  * Example uses direct register reads for faster performance.
  * digitalRead() can still work, but not recommended because SLOW.
@@ -110,6 +116,9 @@ A basic `MPG` class implementation in Arduino-land for a Leonardo might look lik
 
 
 /* Real implementation starts here... */
+
+// Define time function for gamepad debouncer
+uint32_t GamepadDebouncer::getMillis() { return millis(); }
 
 void MPG::setup() {
   // Set to input (invert mask to set to 0)
@@ -158,89 +167,46 @@ void MPG::read() {
 }
 ```
 
-As you can see, there really isn't much to the code, with most of it being defines and fancy formatting of bitwise button reads.
+Most of the code are the pin definitions and fancy formatting of bitwise button reads. You can also extend and override methods in the `MPG` class if you want to do something like change hotkeys, customize input processing steps, etc.
 
-You can also extend and override methods in the `MPG` class if you want to do something like change hotkeys, customize input processing steps, etc.
+### MPGS Class
 
-### Optional Implementation
+If your platform supports some form of persistent storage, like EEPROM, you can use the `MPGS` class instead. The differences between the `MPG` and `MPGS` classes are:
 
-If you'd like to use all of the features available in MPG, you can also implement the following optional items:
+* `MPGS` class has two additional methods available for use:
+  * `save()`
+  * `load()`
+* The `hotkey()` method is overridden to automatically save all options on change.
+* `MPGS` requires two methods in `GamepadStorage` to be defined:
+  * `GamepadStorage::get(int index, void *data, uint16_t size)`
+  * `GamepadStorage::set(int index, void *data, uint16_t size)`
 
-#### Debouncing
-
-Define the debounce time before any MPG library imports:
-
-```c++
-#define DEBOUNCE_MILLIS 5
-```
-
-Then implement a `getMills` function somewhere you import `MPG.h`:
-
-```c++
-// Arduino
-uint32_t getMills() { return mills(); }
-```
-
-```c++
-// Pico SDK
-uint32_t getMillis() { return to_ms_since_boot(get_absolute_time()); }
-```
-
-#### Persistent Storage
-
-Define the persist storage flag before any MPG library imports:
-
-```c++
-#define HAS_PERSISTENT_STORAGE 1
-```
-
-The implement the `GamepadStorage` class methods, something like this ATmega32U4 example:
+Then implement the `GamepadStorage` class methods, something like this ATmega32U4 example:
 
 ```c++
 /*
  * MyAwesomeStorage.cpp
  */
 
+#include <string.h>
 #include <GamepadStorage.h>
-#include <GamepadConfig.h>
 #include <EEPROM.h>
 
-// No-op implmenetations
+void GamepadStorage::get(int index, void *data, uint16_t size)
+{
+  uint8_t buffer[size] = { };
+  for (int i = 0; i < size; i++)
+    EEPROM.get(index + i, buffer[i]);
 
-GamepadStorage::GamepadStorage() { }
-
-void GamepadStorage::save() { }
-
-// "Real-op" implementations
-
-DpadMode GamepadStorage::getDpadMode() {
-  DpadMode mode = DEFAULT_DPAD_MODE;
-  EEPROM.get(STORAGE_DPAD_MODE_INDEX, mode);
-  return mode;
+  memcpy(data, buffer, size);
 }
 
-void GamepadStorage::setDpadMode(DpadMode mode) {
-  EEPROM.put(STORAGE_DPAD_MODE_INDEX, mode);
-}
-
-InputMode GamepadStorage::getInputMode() {
-  InputMode mode = DEFAULT_INPUT_MODE;
-  EEPROM.get(STORAGE_INPUT_MODE_INDEX, mode);
-  return mode;
-}
-
-void GamepadStorage::setInputMode(InputMode mode) {
-  EEPROM.put(STORAGE_INPUT_MODE_INDEX, mode);
-}
-
-SOCDMode GamepadStorage::getSOCDMode() {
-  SOCDMode mode = DEFAULT_SOCD_MODE;
-  EEPROM.get(STORAGE_SOCD_MODE_INDEX, mode);
-  return mode;
-}
-
-void GamepadStorage::setSOCDMode(SOCDMode mode) {
-  EEPROM.put(STORAGE_SOCD_MODE_INDEX, mode);
+void GamepadStorage::set(int index, void *data, uint16_t size)
+{
+  uint8_t buffer[size] = { };
+  memcpy(buffer, data, size);
+  for (int i = 0; i < size; i++)
+    EEPROM.put(index + i, buffer[i]);
 }
 
 ```

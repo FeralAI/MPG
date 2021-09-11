@@ -34,6 +34,9 @@
 #define PORTD_INDEX 1
 #define PORTF_INDEX 2
 
+// Define time function for gamepad debouncer
+uint32_t GamepadDebouncer::getMillis() { return millis(); }
+
 /**
  * Perform pin setup and any other initialization the board requires
  */

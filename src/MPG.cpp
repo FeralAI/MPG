@@ -221,7 +221,6 @@ GamepadHotkey MPG::hotkey()
 	GamepadHotkey action = HOTKEY_NONE;
 	if (pressedF1())
 	{
-		DpadMode lastDpadMode = dpadMode;
 		if (pressedLeft())
 		{
 			action = HOTKEY_DPAD_LEFT_ANALOG;
@@ -246,13 +245,9 @@ GamepadHotkey MPG::hotkey()
 			state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
 			state.buttons |= GAMEPAD_MASK_A1; // Press the Home button
 		}
-
-		if (lastDpadMode != dpadMode)
-			save();
 	}
 	else if (pressedF2())
 	{
-		SOCDMode lastSOCDMode = socdMode;
 		if (pressedUp())
 		{
 			action = HOTKEY_SOCD_UP_PRIORITY;
@@ -271,9 +266,6 @@ GamepadHotkey MPG::hotkey()
 			socdMode = SOCD_MODE_SECOND_INPUT_PRIORITY;
 			state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
 		}
-
-		if (lastSOCDMode != socdMode)
-			save();
 	}
 
 	return action;
@@ -309,34 +301,5 @@ void MPG::process()
 		default:
 			state.buttons |= dpadValue;
 			break;
-	}
-}
-
-void MPG::load()
-{
-	if (hasStorage)
-	{
-		inputMode = GamepadStore.getInputMode();
-		if (inputMode > INPUT_MODE_HID)
-			inputMode = DEFAULT_INPUT_MODE;
-
-		dpadMode = GamepadStore.getDpadMode();
-		if (dpadMode > DPAD_MODE_RIGHT_ANALOG)
-			dpadMode = DEFAULT_DPAD_MODE;
-
-		socdMode = GamepadStore.getSOCDMode();
-		if (socdMode > SOCD_MODE_SECOND_INPUT_PRIORITY)
-			socdMode = DEFAULT_SOCD_MODE;
-	}
-}
-
-void MPG::save()
-{
-	if (hasStorage)
-	{
-		GamepadStore.setInputMode(inputMode);
-		GamepadStore.setDpadMode(dpadMode);
-		GamepadStore.setSOCDMode(socdMode);
-		GamepadStore.save();
 	}
 }

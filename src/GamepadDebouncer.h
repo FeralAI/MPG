@@ -12,9 +12,6 @@
 #include <stdint.h>
 #include "GamepadState.h"
 
-// Implement this wrapper function for your platform
-uint32_t getMillis();
-
 // Bounce2 base Debouncer class containing only the BOUNCE_WITH_PROMPT_DETECTION logic.
 class GamepadDebouncer
 {
@@ -33,6 +30,9 @@ class GamepadDebouncer
 		GamepadDebouncer();
 		GamepadDebouncer(uint32_t m, uint16_t i = 0)
 				: inputMask(m), intervalMillis(i) {}
+
+		// Implement this wrapper function for your platform
+		static uint32_t getMillis();
 
 		uint32_t inputMask;
 

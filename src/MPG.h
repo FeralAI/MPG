@@ -14,15 +14,13 @@
 #include "GamepadDescriptors.h"
 #include "GamepadState.h"
 #include "GamepadDebouncer.h"
-#include "GamepadStorage.h"
 
 #define GAMEPAD_DIGITAL_INPUT_COUNT 18 // Total number of buttons, including D-pad
 
 class MPG
 {
 	public:
-		MPG(int debounceMS = 5, bool hasStorage = true)
-			: debounceMS(debounceMS), hasStorage(hasStorage)
+		MPG(int debounceMS = 5) : debounceMS(debounceMS)
 		{
 			if (debounceMS > 0)
 			{
@@ -35,11 +33,6 @@ class MPG
 		 * @brief The button debounce time in milliseconds. A value of 0 disables debouncing.
 		 */
 		const uint8_t debounceMS;
-
-		/**
-		 * @brief Flag to indicate the gamepad has storage support.
-		 */
-		const bool hasStorage;
 
 		/**
 		 * @brief The current D-pad mode.
@@ -84,16 +77,6 @@ class MPG
 		 * @brief Flag to indicate Right analog stick support.
 		 */
 		bool hasRightAnalogStick = false;
-
-		/**
-		 * @brief Load the saved configuration from persitent storage
-		 */
-		virtual void load();
-
-		/**
-		 * @brief Save the current configuration to persitent storage
-		 */
-		virtual void save();
 
 		/**
 		 * @brief Perform pin setup and any other initialization the board requires
