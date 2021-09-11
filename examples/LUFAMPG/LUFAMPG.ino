@@ -5,13 +5,13 @@
 #define HAS_STORAGE true
 #define DEBOUNCE_MILLIS 5
 
-#include <MPG.h>
+#include <MPGS.h>
 #include <LUFA.h>
 #include "LUFADriver.h"
 
 uint32_t getMillis() { return millis(); } // Define time function for gamepad debouncer
 
-MPG mpg(DEBOUNCE_MILLIS, HAS_STORAGE); // The gamepad instance
+MPGS mpg(DEBOUNCE_MILLIS); // The gamepad instance
 
 void setup()
 {
