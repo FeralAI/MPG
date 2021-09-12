@@ -30,9 +30,8 @@ class GamepadStorage
 		virtual void get(int index, void *data, uint16_t size);
 		virtual void set(int index, void *data, uint16_t size);
 
-		virtual void start() { }
-		virtual void stop() { }
-		virtual void save() { }
+		virtual void start();
+		virtual void save();
 };
 
 static GamepadStorage GamepadStore;
