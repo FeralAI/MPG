@@ -275,17 +275,17 @@ If you do not have a dedicated Home button, you can activate it via the **`S1 + 
 
 The D-pad can Choose from 3 operating modes for the D-pad:
 
-* **`S1 + S2 + DPAD DOWN`** - D-pad
-* **`S1 + S2 + DPAD LEFT`** - Emulate Left Analog stick
-* **`S1 + S2 + DPAD RIGHT`** - Emulate Right Analog stick
+* **`F1 + DPAD DOWN`** - D-pad
+* **`F1 + DPAD LEFT`** - Emulate Left Analog stick
+* **`F1 + DPAD RIGHT`** - Emulate Right Analog stick
 
 #### SOCD Modes
 
 Simultaneous Opposite Cardinal Direction (SOCD) cleaning will ensure the controller doesn't send invalid directional inputs to the computer/console, like Left + Right at the same time. There are 3 modes to choose from:
 
-* **`L3 + R3 + DPAD UP`** - **Up Priority mode**: Up + Down = Up, Left + Right = Neutral (Hitbox behavior)
-* **`L3 + R3 + DPAD DOWN`** - **Neutral mode**: Up + Down = Neutral, Left + Right = Neutral
-* **`L3 + R3 + DPAD LEFT`** - **Last Input Priority (Last Win)**: Hold Up then hold Down = Down, then release and re-press Up = Up. Applies to both axes.
+* **`F2 + DPAD UP`** - **Up Priority mode**: Up + Down = Up, Left + Right = Neutral (Hitbox behavior)
+* **`F2 + DPAD DOWN`** - **Neutral mode**: Up + Down = Neutral, Left + Right = Neutral
+* **`F2 + DPAD LEFT`** - **Last Input Priority (Last Win)**: Hold Up then hold Down = Down, then release and re-press Up = Up. Applies to both axes.
 
 ## USB Descriptors
 
