@@ -9,10 +9,9 @@
   * [Hotkeys](#hotkeys)
     * [Home Button](#home-button)
     * [D-pad Modes](#d-pad-modes)
-    * [SOCD Cleaning](#socd-cleaning)
+    * [SOCD Modes](#socd-modes)
   * [USB Descriptors](#usb-descriptors)
 * [Contributing](#contributing)
-* [Acknowledgements](#acknowledgements)
 
 ## What is MPG?
 
