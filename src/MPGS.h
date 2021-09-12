@@ -19,11 +19,14 @@ class MPGS : public MPG
 		}
 
 		/**
-		 * @brief Checks and executes any hotkey being pressed...with automatic save!
-		 *
-		 * @return GamepadHotkey - The selected hotkey action
+		 * @brief Perform pin setup and any other initialization the board requires
 		 */
-		GamepadHotkey hotkey();
+		virtual void setup();
+
+		/**
+		 * @brief Retrieve the inputs and save to the current state
+		 */
+		virtual void read();
 
 		/**
 		 * @brief Load the saved configuration from persitent storage.
@@ -34,6 +37,13 @@ class MPGS : public MPG
 		 * @brief Save the current configuration to persitent storage if changed.
 		 */
 		virtual void save();
+
+		/**
+		 * @brief Checks and executes any hotkey being pressed...with automatic save!
+		 *
+		 * @return GamepadHotkey - The selected hotkey action
+		 */
+		virtual GamepadHotkey hotkey();
 
 	protected:
 		GamepadStorage *mpgStorage;
