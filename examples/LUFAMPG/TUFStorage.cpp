@@ -18,3 +18,6 @@ void GamepadStorage::set(int index, void *data, uint16_t size)
 	for (int i = 0; i < size; i++)
 		EEPROM.put(index + i, buffer[i]);
 }
+
+void GamepadStorage::start() { }
+void GamepadStorage::save() { }

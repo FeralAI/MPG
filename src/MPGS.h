@@ -19,24 +19,14 @@ class MPGS : public MPG
 		}
 
 		/**
-		 * @brief Perform pin setup and any other initialization the board requires
-		 */
-		virtual void setup();
-
-		/**
-		 * @brief Retrieve the inputs and save to the current state
-		 */
-		virtual void read();
-
-		/**
 		 * @brief Load the saved configuration from persitent storage.
 		 */
-		virtual void load();
+		void load();
 
 		/**
 		 * @brief Save the current configuration to persitent storage if changed.
 		 */
-		virtual void save();
+		void save();
 
 		/**
 		 * @brief Checks and executes any hotkey being pressed...with automatic save!

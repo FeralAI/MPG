@@ -30,9 +30,17 @@ class GamepadStorage
 		virtual void get(int index, void *data, uint16_t size);
 		virtual void set(int index, void *data, uint16_t size);
 
-		virtual void start() { }
-		virtual void stop() { }
-		virtual void save() { }
+		virtual void start();
+		virtual void save();
+
+		DpadMode getDpadMode();
+		void setDpadMode(DpadMode mode);
+
+		InputMode getInputMode();
+		void setInputMode(InputMode mode);
+
+		SOCDMode getSOCDMode();
+		void setSOCDMode(SOCDMode mode);
 };
 
 static GamepadStorage GamepadStore;
