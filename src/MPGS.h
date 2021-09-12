@@ -45,16 +45,6 @@ class MPGS : public MPG
 		 */
 		virtual GamepadHotkey hotkey();
 
-		/**
-		 * @brief Check for F1 button press. Can override in derived board class.
-		 */
-		virtual bool pressedF1();
-
-		/**
-		 * @brief Check for F1 button press. Can override in derived board class.
-		 */
-		virtual bool pressedF2();
-
 	protected:
 		GamepadStorage *mpgStorage;
 };
