@@ -32,6 +32,15 @@ class GamepadStorage
 
 		virtual void start();
 		virtual void save();
+
+		DpadMode getDpadMode();
+		void setDpadMode(DpadMode mode);
+
+		InputMode getInputMode();
+		void setInputMode(InputMode mode);
+
+		SOCDMode getSOCDMode();
+		void setSOCDMode(SOCDMode mode);
 };
 
 static GamepadStorage GamepadStore;
