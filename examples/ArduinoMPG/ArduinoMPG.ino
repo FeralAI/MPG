@@ -7,9 +7,6 @@
 
 #define GAMEPAD_DEBOUNCE_MILLIS 5
 
-// Define time function for gamepad debouncer
-uint32_t getMillis() { return millis(); }
-
 MPG mpg;
 
 void setup()

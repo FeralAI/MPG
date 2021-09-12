@@ -22,7 +22,6 @@ void setupHardware(InputMode mode)
 	clock_prescale_set(clock_div_1);
 
 	// We can then initialize our hardware and peripherals, including the USB stack.
-	// The USB stack should be initialized last.
 	USB_Init();
 
 	// Enable interrupts after USB init
@@ -33,8 +32,34 @@ void sendReport(void *data, uint8_t size)
 {
 	reportData = data;
 	reportSize = size;
-	if (memcmp(lastReportBytes, reportData, reportSize) != 0)
-		HID_Task();
+	if (
+		memcmp(lastReportBytes, reportData, reportSize) != 0 && // Did the report change?
+		USB_DeviceState == DEVICE_STATE_Configured              // Is USB ready?
+	)
+	{
+		Endpoint_SelectEndpoint(EPADDR_OUT);
+		if (Endpoint_IsOUTReceived())
+		{
+			if (Endpoint_IsReadWriteAllowed())
+			{
+				SwitchOutReport JoystickOutputData;
+				Endpoint_Read_Stream_LE(&JoystickOutputData, sizeof(JoystickOutputData), NULL);
+				// At this point, we can react to this data.
+			}
+
+			Endpoint_ClearOUT();
+		}
+
+		Endpoint_SelectEndpoint(EPADDR_IN);
+
+		if (Endpoint_IsINReady())
+		{
+			Endpoint_Write_Stream_LE(reportData, reportSize, NULL);
+			Endpoint_ClearIN();
+			memcpy(lastReportBytes, reportData, reportSize);
+			memset(reportData, 0, reportSize);
+		}
+	}
 
 	USB_USBTask();
 }
@@ -128,38 +153,5 @@ void EVENT_USB_Device_ControlRequest(void)
 				Endpoint_ClearOUT();
 			}
 			break;
-	}
-}
-
-// Process and deliver data from IN and OUT endpoints.
-void HID_Task(void)
-{
-	if (USB_DeviceState != DEVICE_STATE_Configured)
-		return;
-
-	if (inputMode != INPUT_MODE_XINPUT)
-	{
-		Endpoint_SelectEndpoint(EPADDR_OUT);
-		if (Endpoint_IsOUTReceived())
-		{
-			if (Endpoint_IsReadWriteAllowed())
-			{
-				SwitchOutReport JoystickOutputData;
-				Endpoint_Read_Stream_LE(&JoystickOutputData, sizeof(JoystickOutputData), NULL);
-				// At this point, we can react to this data.
-			}
-
-			Endpoint_ClearOUT();
-		}
-	}
-
-	Endpoint_SelectEndpoint(EPADDR_IN);
-
-	if (Endpoint_IsINReady())
-	{
-		Endpoint_Write_Stream_LE(reportData, reportSize, NULL);
-		Endpoint_ClearIN();
-		memcpy(lastReportBytes, reportData, reportSize);
-		memset(reportData, 0, reportSize);
 	}
 }
