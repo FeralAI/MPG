@@ -15,10 +15,20 @@ void MPG::debounce()
 	{
 		if (debouncers[i].update())
 		{
-			if (debouncers[i].rose())
-				state.buttons |= debouncers[i].inputMask;
+			if (debouncers[i].isDpad)
+			{
+				if (debouncers[i].rose())
+					state.dpad |= debouncers[i].inputMask;
+				else
+					state.dpad &= ~(debouncers[i].inputMask);
+			}
 			else
-				state.buttons &= ~(debouncers[i].inputMask);
+			{
+				if (debouncers[i].rose())
+					state.buttons |= debouncers[i].inputMask;
+				else
+					state.buttons &= ~(debouncers[i].inputMask);
+			}
 		}
 	}
 }
@@ -70,7 +80,7 @@ HIDReport *MPG::getHIDReport()
 	report.rx = state.rx >> 8;
 	report.ry = state.ry >> 8;
 
-	switch (state.buttons & GAMEPAD_MASK_DPAD)
+	switch (state.dpad & GAMEPAD_MASK_DPAD)
 	{
 		case GAMEPAD_MASK_UP:                        report.hat = HID_HAT_UP;        break;
 		case GAMEPAD_MASK_UP | GAMEPAD_MASK_RIGHT:   report.hat = HID_HAT_UPRIGHT;   break;
@@ -121,7 +131,7 @@ SwitchReport *MPG::getSwitchReport()
 	report.rx = state.rx >> 8;
 	report.ry = state.ry >> 8;
 
-	switch (state.buttons & GAMEPAD_MASK_DPAD)
+	switch (state.dpad & GAMEPAD_MASK_DPAD)
 	{
 		case GAMEPAD_MASK_UP:                        report.hat = SWITCH_HAT_UP;        break;
 		case GAMEPAD_MASK_UP | GAMEPAD_MASK_RIGHT:   report.hat = SWITCH_HAT_UPRIGHT;   break;
@@ -206,8 +216,8 @@ XInputReport *MPG::getXInputReport()
 	}
 	else
 	{
-		report.lt = state.buttons & GAMEPAD_MASK_L2 ? 0xFF : 0;
-		report.rt = state.buttons & GAMEPAD_MASK_R2 ? 0xFF : 0;
+		report.lt = pressedL2() ? 0xFF : 0;
+		report.rt = pressedR2() ? 0xFF : 0;
 	}
 
 	return &report;

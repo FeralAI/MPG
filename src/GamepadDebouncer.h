@@ -31,10 +31,11 @@ class GamepadDebouncer
 
 	public:
 		GamepadDebouncer();
-		GamepadDebouncer(uint32_t m, uint16_t i = 0)
-				: inputMask(m), intervalMillis(i) {}
+		GamepadDebouncer(uint16_t m, const uint16_t i = 0, const bool isDpad = false)
+				: inputMask(m), intervalMillis(i), isDpad(isDpad) {}
 
-		uint32_t inputMask;
+		const uint16_t inputMask;
+		const bool isDpad;
 
 		__attribute__((always_inline)) inline void setGamepadState(GamepadState &gamepadState)
 		{
@@ -54,6 +55,7 @@ class GamepadDebouncer
 
 	protected:
 		void begin();
+		__attribute__((always_inline)) inline bool readCurrentState();
 		unsigned long previousMillis;
 		uint16_t intervalMillis;
 		uint8_t state;

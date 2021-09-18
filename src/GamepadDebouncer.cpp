@@ -18,7 +18,7 @@ void GamepadDebouncer::setInterval(uint16_t intervalMillis)
 void GamepadDebouncer::begin()
 {
 	state = 0;
-	if (gamepadState->buttons & inputMask)
+	if (readCurrentState())
 	{
 		setStateFlag(DEBOUNCED_STATE | UNSTABLE_STATE);
 	}
@@ -30,7 +30,7 @@ bool GamepadDebouncer::update()
 {
 	unsetStateFlag(CHANGED_STATE);
 
-	bool readState = gamepadState->buttons & inputMask;
+	bool readState = readCurrentState();
 
 	if (readState != getStateFlag(DEBOUNCED_STATE))
 	{
@@ -80,4 +80,12 @@ bool GamepadDebouncer::rose() const
 bool GamepadDebouncer::fell() const
 {
 	return !getStateFlag(DEBOUNCED_STATE) && getStateFlag(CHANGED_STATE);
+}
+
+inline bool GamepadDebouncer::readCurrentState()
+{
+	if (isDpad)
+		return gamepadState->dpad & inputMask;
+	else
+		return gamepadState->buttons & inputMask;
 }

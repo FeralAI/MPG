@@ -65,6 +65,7 @@ class MPG
 		 */
 		GamepadState state =
 		{
+			.dpad = 0,
 			.buttons = 0,
 			.lx = GAMEPAD_JOYSTICK_MID,
 			.ly = GAMEPAD_JOYSTICK_MID,
@@ -154,28 +155,33 @@ class MPG
 		/**
 		 * @brief Check for a button press. Used by `pressed[Button]` helper methods.
 		 */
-		inline bool __attribute__((always_inline)) pressed(const uint32_t mask) { return state.buttons & mask; }
+		inline bool __attribute__((always_inline)) pressedButton(const uint16_t mask) { return state.buttons & mask; }
 
-		inline bool __attribute__((always_inline)) pressedUp()    { return pressed(GAMEPAD_MASK_UP); }
-		inline bool __attribute__((always_inline)) pressedDown()  { return pressed(GAMEPAD_MASK_DOWN); }
-		inline bool __attribute__((always_inline)) pressedLeft()  { return pressed(GAMEPAD_MASK_LEFT); }
-		inline bool __attribute__((always_inline)) pressedRight() { return pressed(GAMEPAD_MASK_RIGHT); }
-		inline bool __attribute__((always_inline)) pressedB1()    { return pressed(GAMEPAD_MASK_B1); }
-		inline bool __attribute__((always_inline)) pressedB2()    { return pressed(GAMEPAD_MASK_B2); }
-		inline bool __attribute__((always_inline)) pressedB3()    { return pressed(GAMEPAD_MASK_B3); }
-		inline bool __attribute__((always_inline)) pressedB4()    { return pressed(GAMEPAD_MASK_B4); }
-		inline bool __attribute__((always_inline)) pressedL1()    { return pressed(GAMEPAD_MASK_L1); }
-		inline bool __attribute__((always_inline)) pressedR1()    { return pressed(GAMEPAD_MASK_R1); }
-		inline bool __attribute__((always_inline)) pressedL2()    { return pressed(GAMEPAD_MASK_L2); }
-		inline bool __attribute__((always_inline)) pressedR2()    { return pressed(GAMEPAD_MASK_R2); }
-		inline bool __attribute__((always_inline)) pressedS1()    { return pressed(GAMEPAD_MASK_S1); }
-		inline bool __attribute__((always_inline)) pressedS2()    { return pressed(GAMEPAD_MASK_S2); }
-		inline bool __attribute__((always_inline)) pressedL3()    { return pressed(GAMEPAD_MASK_L3); }
-		inline bool __attribute__((always_inline)) pressedR3()    { return pressed(GAMEPAD_MASK_R3); }
-		inline bool __attribute__((always_inline)) pressedA1()    { return pressed(GAMEPAD_MASK_A1); }
-		inline bool __attribute__((always_inline)) pressedA2()    { return pressed(GAMEPAD_MASK_A2); }
-		inline bool __attribute__((always_inline)) pressedF1()    { return pressed(f1Mask); }
-		inline bool __attribute__((always_inline)) pressedF2()    { return pressed(f2Mask); }
+		/**
+		 * @brief Check for a dpad press. Used by `pressed[Dpad]` helper methods.
+		 */
+		inline bool __attribute__((always_inline)) pressedDpad(const uint8_t mask) { return state.dpad & mask; }
+
+		inline bool __attribute__((always_inline)) pressedUp()    { return pressedDpad(GAMEPAD_MASK_UP); }
+		inline bool __attribute__((always_inline)) pressedDown()  { return pressedDpad(GAMEPAD_MASK_DOWN); }
+		inline bool __attribute__((always_inline)) pressedLeft()  { return pressedDpad(GAMEPAD_MASK_LEFT); }
+		inline bool __attribute__((always_inline)) pressedRight() { return pressedDpad(GAMEPAD_MASK_RIGHT); }
+		inline bool __attribute__((always_inline)) pressedB1()    { return pressedButton(GAMEPAD_MASK_B1); }
+		inline bool __attribute__((always_inline)) pressedB2()    { return pressedButton(GAMEPAD_MASK_B2); }
+		inline bool __attribute__((always_inline)) pressedB3()    { return pressedButton(GAMEPAD_MASK_B3); }
+		inline bool __attribute__((always_inline)) pressedB4()    { return pressedButton(GAMEPAD_MASK_B4); }
+		inline bool __attribute__((always_inline)) pressedL1()    { return pressedButton(GAMEPAD_MASK_L1); }
+		inline bool __attribute__((always_inline)) pressedR1()    { return pressedButton(GAMEPAD_MASK_R1); }
+		inline bool __attribute__((always_inline)) pressedL2()    { return pressedButton(GAMEPAD_MASK_L2); }
+		inline bool __attribute__((always_inline)) pressedR2()    { return pressedButton(GAMEPAD_MASK_R2); }
+		inline bool __attribute__((always_inline)) pressedS1()    { return pressedButton(GAMEPAD_MASK_S1); }
+		inline bool __attribute__((always_inline)) pressedS2()    { return pressedButton(GAMEPAD_MASK_S2); }
+		inline bool __attribute__((always_inline)) pressedL3()    { return pressedButton(GAMEPAD_MASK_L3); }
+		inline bool __attribute__((always_inline)) pressedR3()    { return pressedButton(GAMEPAD_MASK_R3); }
+		inline bool __attribute__((always_inline)) pressedA1()    { return pressedButton(GAMEPAD_MASK_A1); }
+		inline bool __attribute__((always_inline)) pressedA2()    { return pressedButton(GAMEPAD_MASK_A2); }
+		inline bool __attribute__((always_inline)) pressedF1()    { return pressedButton(f1Mask); }
+		inline bool __attribute__((always_inline)) pressedF2()    { return pressedButton(f2Mask); }
 
 	protected:
 		/**
@@ -183,10 +189,10 @@ class MPG
 		 */
 		GamepadDebouncer debouncers[GAMEPAD_DIGITAL_INPUT_COUNT] =
 		{
-			GamepadDebouncer(GAMEPAD_MASK_UP, debounceMS),
-			GamepadDebouncer(GAMEPAD_MASK_DOWN, debounceMS),
-			GamepadDebouncer(GAMEPAD_MASK_LEFT, debounceMS),
-			GamepadDebouncer(GAMEPAD_MASK_RIGHT, debounceMS),
+			GamepadDebouncer(GAMEPAD_MASK_UP, debounceMS, true),
+			GamepadDebouncer(GAMEPAD_MASK_DOWN, debounceMS, true),
+			GamepadDebouncer(GAMEPAD_MASK_LEFT, debounceMS, true),
+			GamepadDebouncer(GAMEPAD_MASK_RIGHT, debounceMS, true),
 			GamepadDebouncer(GAMEPAD_MASK_B1, debounceMS),
 			GamepadDebouncer(GAMEPAD_MASK_B2, debounceMS),
 			GamepadDebouncer(GAMEPAD_MASK_B3, debounceMS),
