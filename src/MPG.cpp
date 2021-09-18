@@ -14,13 +14,16 @@ void *MPG::getReport()
 	switch (inputMode)
 	{
 		case INPUT_MODE_XINPUT:
-			return getXInputReport();
+			xinputReport = getXInputReport();
+			return &xinputReport;
 
 		case INPUT_MODE_SWITCH:
-			return getSwitchReport();
+			switchReport = getSwitchReport();
+			return &switchReport;
 
 		default:
-			return getHIDReport();
+			hidReport = getHIDReport();
+			return &hidReport;
 	}
 }
 
@@ -39,22 +42,17 @@ uint16_t MPG::getReportSize()
 	}
 }
 
-HIDReport *MPG::getHIDReport()
+HIDReport MPG::getHIDReport()
 {
-	static HIDReport report =
+	HIDReport report =
 	{
 		.buttons = 0,
 		.hat = HID_HAT_NOTHING,
-		.lx = HID_JOYSTICK_MID,
-		.ly = HID_JOYSTICK_MID,
-		.rx = HID_JOYSTICK_MID,
-		.ry = HID_JOYSTICK_MID,
+		.lx = (uint8_t)(state.lx >> 8),
+		.ly = (uint8_t)(state.ly >> 8),
+		.rx = (uint8_t)(state.rx >> 8),
+		.ry = (uint8_t)(state.ry >> 8),
 	};
-
-	report.lx = state.lx >> 8;
-	report.ly = state.ly >> 8;
-	report.rx = state.rx >> 8;
-	report.ry = state.ry >> 8;
 
 	switch (state.dpad & GAMEPAD_MASK_DPAD)
 	{
@@ -86,26 +84,21 @@ HIDReport *MPG::getHIDReport()
 		| (pressedA2() ? HID_MASK_TP       : 0)
 	;
 
-	return &report;
+	return report;
 }
 
-SwitchReport *MPG::getSwitchReport()
+SwitchReport MPG::getSwitchReport()
 {
-	static SwitchReport report =
+	SwitchReport report =
 	{
 		.buttons = 0,
-		.hat = 0,
-		.lx = SWITCH_JOYSTICK_MID,
-		.ly = SWITCH_JOYSTICK_MID,
-		.rx = SWITCH_JOYSTICK_MID,
-		.ry = SWITCH_JOYSTICK_MID,
+		.hat = SWITCH_HAT_NOTHING,
+		.lx = (uint8_t)(state.lx >> 8),
+		.ly = (uint8_t)(state.ly >> 8),
+		.rx = (uint8_t)(state.rx >> 8),
+		.ry = (uint8_t)(state.ry >> 8),
 		.vendor = 0,
 	};
-
-	report.lx = state.lx >> 8;
-	report.ly = state.ly >> 8;
-	report.rx = state.rx >> 8;
-	report.ry = state.ry >> 8;
 
 	switch (state.dpad & GAMEPAD_MASK_DPAD)
 	{
@@ -137,32 +130,26 @@ SwitchReport *MPG::getSwitchReport()
 		| (pressedA2() ? SWITCH_MASK_CAPTURE : 0)
 	;
 
-	return &report;
+	return report;
 }
 
-XInputReport *MPG::getXInputReport()
+XInputReport MPG::getXInputReport()
 {
-	static XInputReport report =
+	XInputReport report =
 	{
 		.report_id = 0,
 		.report_size = XINPUT_ENDPOINT_SIZE,
 		.buttons1 = 0,
 		.buttons2 = 0,
-		.lt = 0,
-		.rt = 0,
-		.lx = GAMEPAD_JOYSTICK_MID,
-		.ly = GAMEPAD_JOYSTICK_MID,
-		.rx = GAMEPAD_JOYSTICK_MID,
-		.ry = GAMEPAD_JOYSTICK_MID,
+		.lt = state.lt,
+		.rt = state.rt,
+		.lx = state.lx + -32768,
+		.ly = ~(state.ly) + -32768,
+		.rx = state.rx + -32768,
+		.ry = ~(state.ry) + -32768,
 		._reserved = { },
 	};
 
-	report.lx = state.lx + -32768;
-	report.ly = ~(state.ly) + -32768;
-	report.rx = state.rx + -32768;
-	report.ry = ~(state.ry) + -32768;
-
-	// Convert button states
 	report.buttons1 = 0
 		| (pressedUp()    ? XBOX_MASK_UP    : 0)
 		| (pressedDown()  ? XBOX_MASK_DOWN  : 0)
@@ -184,7 +171,6 @@ XInputReport *MPG::getXInputReport()
 		| (pressedB4() ? XBOX_MASK_Y    : 0)
 	;
 
-	// Handle trigger values
 	if (hasAnalogTriggers)
 	{
 		report.lt = state.lt;
@@ -196,7 +182,7 @@ XInputReport *MPG::getXInputReport()
 		report.rt = pressedR2() ? 0xFF : 0;
 	}
 
-	return &report;
+	return report;
 }
 
 GamepadHotkey MPG::hotkey()

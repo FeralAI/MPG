@@ -135,21 +135,21 @@ class MPG
 		 *
 		 * @return HIDReport* HID report pointer
 		 */
-		HIDReport *getHIDReport();
+		HIDReport getHIDReport();
 
 		/**
 		 * @brief Generate USB report for Switch mode.
 		 *
 		 * @return SwitchReport* Switch report pointer
 		 */
-		SwitchReport *getSwitchReport();
+		SwitchReport getSwitchReport();
 
 		/**
 		 * @brief Generate USB report for XInput mode.
 		 *
 		 * @return XInputReport XInput report pointer.
 		 */
-		XInputReport *getXInputReport();
+		XInputReport getXInputReport();
 
 		/**
 		 * @brief Check for a button press. Used by `pressed[Button]` helper methods.
