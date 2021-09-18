@@ -8,7 +8,7 @@
 
 #include "GamepadDebouncer.h"
 
-GamepadDebouncer::GamepadDebouncer() : previousMillis(0), intervalMillis(10), state(0) {}
+GamepadDebouncer::GamepadDebouncer() : previousMillis(0), intervalMillis(5), state(0) {}
 
 void GamepadDebouncer::setInterval(uint16_t intervalMillis)
 {
@@ -18,7 +18,7 @@ void GamepadDebouncer::setInterval(uint16_t intervalMillis)
 void GamepadDebouncer::begin()
 {
 	state = 0;
-	if (readCurrentState())
+	if (gamepadState->buttons & inputMask)
 	{
 		setStateFlag(DEBOUNCED_STATE | UNSTABLE_STATE);
 	}
@@ -30,7 +30,7 @@ bool GamepadDebouncer::update()
 {
 	unsetStateFlag(CHANGED_STATE);
 
-	bool readState = readCurrentState();
+	bool readState = gamepadState->buttons & inputMask;
 
 	if (readState != getStateFlag(DEBOUNCED_STATE))
 	{
@@ -80,9 +80,4 @@ bool GamepadDebouncer::rose() const
 bool GamepadDebouncer::fell() const
 {
 	return !getStateFlag(DEBOUNCED_STATE) && getStateFlag(CHANGED_STATE);
-}
-
-bool GamepadDebouncer::readCurrentState()
-{
-	return gamepadState->buttons & inputMask;
 }

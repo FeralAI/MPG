@@ -34,9 +34,6 @@
 #define PORTD_INDEX 1
 #define PORTF_INDEX 2
 
-// Define time function for gamepad debouncer
-uint32_t GamepadDebouncer::getMillis() { return millis(); }
-
 /**
  * Perform pin setup and any other initialization the board requires
  */
@@ -57,14 +54,6 @@ void MPG::read()
 {
 	// Cache port states
 	uint8_t ports[] = { ~PINB, ~PIND, ~PINF };
-
-	// Static values for digital pad
-	state.lx = GAMEPAD_JOYSTICK_MID;
-	state.ly = GAMEPAD_JOYSTICK_MID;
-	state.rx = GAMEPAD_JOYSTICK_MID;
-	state.ry = GAMEPAD_JOYSTICK_MID;
-	state.lt = 0;
-	state.rt = 0;
 
 	// Gather raw inputs
 	state.buttons = 0

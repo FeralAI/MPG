@@ -12,6 +12,9 @@
 #include <stdint.h>
 #include "GamepadState.h"
 
+// Implement this wrapper function for your platform
+uint32_t getMillis();
+
 // Bounce2 base Debouncer class containing only the BOUNCE_WITH_PROMPT_DETECTION logic.
 class GamepadDebouncer
 {
@@ -20,19 +23,16 @@ class GamepadDebouncer
 		static const uint8_t UNSTABLE_STATE  = 0b00000010; // Actual last state value behind the scene
 		static const uint8_t CHANGED_STATE   = 0b00000100; // The DEBOUNCED_STATE has changed since last update()
 
-		inline void changeState();
-		inline void setStateFlag(const uint8_t flag) { state |= flag; }
-		inline void unsetStateFlag(const uint8_t flag) { state &= ~flag; }
-		inline void toggleStateFlag(const uint8_t flag) { state ^= flag; }
-		inline bool getStateFlag(const uint8_t flag) const { return ((state & flag) != 0); }
+		inline void __attribute__((always_inline)) changeState();
+		inline void __attribute__((always_inline)) setStateFlag(const uint8_t flag) { state |= flag; }
+		inline void __attribute__((always_inline)) unsetStateFlag(const uint8_t flag) { state &= ~flag; }
+		inline void __attribute__((always_inline)) toggleStateFlag(const uint8_t flag) { state ^= flag; }
+		inline bool __attribute__((always_inline)) getStateFlag(const uint8_t flag) const { return ((state & flag) != 0); }
 
 	public:
 		GamepadDebouncer();
 		GamepadDebouncer(uint32_t m, uint16_t i = 0)
 				: inputMask(m), intervalMillis(i) {}
-
-		// Implement this wrapper function for your platform
-		static uint32_t getMillis();
 
 		uint32_t inputMask;
 
@@ -54,7 +54,6 @@ class GamepadDebouncer
 
 	protected:
 		void begin();
-		bool readCurrentState();
 		unsigned long previousMillis;
 		uint16_t intervalMillis;
 		uint8_t state;

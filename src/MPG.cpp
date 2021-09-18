@@ -28,16 +28,13 @@ void *MPG::getReport()
 	switch (inputMode)
 	{
 		case INPUT_MODE_XINPUT:
-			xinputReport = getXInputReport();
-			return &xinputReport;
+			return getXInputReport();
 
 		case INPUT_MODE_SWITCH:
-			switchReport = getSwitchReport();
-			return &switchReport;
+			return getSwitchReport();
 
 		default:
-			hidReport = getHIDReport();
-			return &hidReport;
+			return getHIDReport();
 	}
 }
 
@@ -56,9 +53,9 @@ uint16_t MPG::getReportSize()
 	}
 }
 
-HIDReport MPG::getHIDReport()
+HIDReport *MPG::getHIDReport()
 {
-	HIDReport report =
+	static HIDReport report =
 	{
 		.buttons = 0,
 		.hat = HID_HAT_NOTHING,
@@ -87,9 +84,9 @@ HIDReport MPG::getHIDReport()
 	}
 
 	report.buttons = 0
-		| (pressedB3() ? HID_MASK_SQUARE   : 0)
 		| (pressedB1() ? HID_MASK_CROSS    : 0)
 		| (pressedB2() ? HID_MASK_CIRCLE   : 0)
+		| (pressedB3() ? HID_MASK_SQUARE   : 0)
 		| (pressedB4() ? HID_MASK_TRIANGLE : 0)
 		| (pressedL1() ? HID_MASK_L1       : 0)
 		| (pressedR1() ? HID_MASK_R1       : 0)
@@ -103,12 +100,12 @@ HIDReport MPG::getHIDReport()
 		| (pressedA2() ? HID_MASK_TP       : 0)
 	;
 
-	return report;
+	return &report;
 }
 
-SwitchReport MPG::getSwitchReport()
+SwitchReport *MPG::getSwitchReport()
 {
-	SwitchReport report =
+	static SwitchReport report =
 	{
 		.buttons = 0,
 		.hat = 0,
@@ -138,9 +135,9 @@ SwitchReport MPG::getSwitchReport()
 	}
 
 	report.buttons = 0
-		| (pressedB3() ? SWITCH_MASK_Y       : 0)
 		| (pressedB1() ? SWITCH_MASK_B       : 0)
 		| (pressedB2() ? SWITCH_MASK_A       : 0)
+		| (pressedB3() ? SWITCH_MASK_Y       : 0)
 		| (pressedB4() ? SWITCH_MASK_X       : 0)
 		| (pressedL1() ? SWITCH_MASK_L       : 0)
 		| (pressedR1() ? SWITCH_MASK_R       : 0)
@@ -154,12 +151,12 @@ SwitchReport MPG::getSwitchReport()
 		| (pressedA2() ? SWITCH_MASK_CAPTURE : 0)
 	;
 
-	return report;
+	return &report;
 }
 
-XInputReport MPG::getXInputReport()
+XInputReport *MPG::getXInputReport()
 {
-	XInputReport report =
+	static XInputReport report =
 	{
 		.report_id = 0,
 		.report_size = XINPUT_ENDPOINT_SIZE,
@@ -209,11 +206,11 @@ XInputReport MPG::getXInputReport()
 	}
 	else
 	{
-		report.lt = pressedL2() ? 0xFF : 0;
-		report.rt = pressedR2() ? 0xFF : 0;
+		report.lt = state.buttons & GAMEPAD_MASK_L2 ? 0xFF : 0;
+		report.rt = state.buttons & GAMEPAD_MASK_R2 ? 0xFF : 0;
 	}
 
-	return report;
+	return &report;
 }
 
 GamepadHotkey MPG::hotkey()
@@ -221,85 +218,86 @@ GamepadHotkey MPG::hotkey()
 	GamepadHotkey action = HOTKEY_NONE;
 	if (pressedF1())
 	{
-		if (pressedLeft())
+		switch (state.buttons & GAMEPAD_MASK_DPAD)
 		{
-			action = HOTKEY_DPAD_LEFT_ANALOG;
-			dpadMode = DPAD_MODE_LEFT_ANALOG;
-			state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
-		}
-		else if (pressedRight())
-		{
-			action = HOTKEY_DPAD_RIGHT_ANALOG;
-			dpadMode = DPAD_MODE_RIGHT_ANALOG;
-			state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
-		}
-		else if (pressedDown())
-		{
-			action = HOTKEY_DPAD_DIGITAL;
-			dpadMode = DPAD_MODE_DIGITAL;
-			state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
-		}
-		else if (pressedUp())
-		{
-			action = HOTKEY_HOME_BUTTON;
-			state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
-			state.buttons |= GAMEPAD_MASK_A1; // Press the Home button
+			case GAMEPAD_MASK_LEFT:
+				action = HOTKEY_DPAD_LEFT_ANALOG;
+				dpadMode = DPAD_MODE_LEFT_ANALOG;
+				state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
+				break;
+
+			case GAMEPAD_MASK_RIGHT:
+				action = HOTKEY_DPAD_RIGHT_ANALOG;
+				dpadMode = DPAD_MODE_RIGHT_ANALOG;
+				state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
+				break;
+
+			case GAMEPAD_MASK_DOWN:
+				action = HOTKEY_DPAD_DIGITAL;
+				dpadMode = DPAD_MODE_DIGITAL;
+				state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
+				break;
+
+			case GAMEPAD_MASK_UP:
+				action = HOTKEY_HOME_BUTTON;
+				state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
+				state.buttons |= GAMEPAD_MASK_A1; // Press the Home button
+				break;
 		}
 	}
 	else if (pressedF2())
 	{
-		if (pressedUp())
+		switch (state.buttons & GAMEPAD_MASK_DPAD)
 		{
-			action = HOTKEY_SOCD_UP_PRIORITY;
-			socdMode = SOCD_MODE_UP_PRIORITY;
-			state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
-		}
-		else if (pressedDown())
-		{
-			action = HOTKEY_SOCD_NEUTRAL;
-			socdMode = SOCD_MODE_NEUTRAL;
-			state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
-		}
-		else if (pressedLeft())
-		{
-			action = HOTKEY_SOCD_LAST_INPUT;
-			socdMode = SOCD_MODE_SECOND_INPUT_PRIORITY;
-			state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
+			case GAMEPAD_MASK_DOWN:
+				action = HOTKEY_SOCD_NEUTRAL;
+				socdMode = SOCD_MODE_NEUTRAL;
+				state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
+				break;
+
+			case GAMEPAD_MASK_UP:
+				action = HOTKEY_SOCD_UP_PRIORITY;
+				socdMode = SOCD_MODE_UP_PRIORITY;
+				state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
+				break;
+
+			case GAMEPAD_MASK_LEFT:
+				action = HOTKEY_SOCD_LAST_INPUT;
+				socdMode = SOCD_MODE_SECOND_INPUT_PRIORITY;
+				state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
+				break;
 		}
 	}
 
 	return action;
 }
 
-bool MPG::pressedF1()
-{
-	return (state.buttons & (GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2)) == (GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
-}
-
-bool MPG::pressedF2()
-{
-	return (state.buttons & (GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3)) == (GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
-}
-
 void MPG::process()
 {
 	uint8_t dpadValue = runSOCDCleaner(socdMode, (state.buttons & GAMEPAD_MASK_DPAD));
-	state.buttons &= ~GAMEPAD_MASK_DPAD;
 
 	switch (dpadMode)
 	{
-		case DPAD_MODE_LEFT_ANALOG:
+		case DpadMode::DPAD_MODE_LEFT_ANALOG:
 			state.lx = dpadToAnalogX(dpadValue);
 			state.ly = dpadToAnalogY(dpadValue);
+			dpadValue = 0;
 			break;
 
-		case DPAD_MODE_RIGHT_ANALOG:
+		case DpadMode::DPAD_MODE_RIGHT_ANALOG:
 			state.rx = dpadToAnalogX(dpadValue);
 			state.ry = dpadToAnalogY(dpadValue);
+			dpadValue = 0;
 			break;
+	}
 
-		default:
-			state.buttons |= dpadValue;
-			break;
+	if (!hasLeftAnalogStick) {
+		state.lx = GAMEPAD_JOYSTICK_MID;
+		state.ly = GAMEPAD_JOYSTICK_MID;
+	}
+
+	if (!hasRightAnalogStick) {
+		state.rx = GAMEPAD_JOYSTICK_MID;
+		state.ry = GAMEPAD_JOYSTICK_MID;
 	}
 }

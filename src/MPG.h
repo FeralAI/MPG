@@ -20,7 +20,8 @@
 class MPG
 {
 	public:
-		MPG(int debounceMS = 5) : debounceMS(debounceMS)
+		MPG(int debounceMS = 5, uint32_t f1Mask = (GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2), uint32_t f2Mask = (GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3))
+			: debounceMS(debounceMS), f1Mask(f1Mask), f2Mask(f2Mask)
 		{
 			if (debounceMS > 0)
 			{
@@ -33,6 +34,16 @@ class MPG
 		 * @brief The button debounce time in milliseconds. A value of 0 disables debouncing.
 		 */
 		const uint8_t debounceMS;
+
+		/**
+		 * @brief The input mask for the F1 button
+		 */
+		const uint32_t f1Mask;
+
+		/**
+		 * @brief The input mask for the F2 button
+		 */
+		const uint32_t f2Mask;
 
 		/**
 		 * @brief The current D-pad mode.
@@ -124,55 +135,47 @@ class MPG
 		 *
 		 * @return HIDReport* HID report pointer
 		 */
-		HIDReport getHIDReport();
+		HIDReport *getHIDReport();
 
 		/**
 		 * @brief Generate USB report for Switch mode.
 		 *
 		 * @return SwitchReport* Switch report pointer
 		 */
-		SwitchReport getSwitchReport();
+		SwitchReport *getSwitchReport();
 
 		/**
 		 * @brief Generate USB report for XInput mode.
 		 *
 		 * @return XInputReport XInput report pointer.
 		 */
-		XInputReport getXInputReport();
+		XInputReport *getXInputReport();
 
 		/**
-		 * @brief Check for F1 button press. Can override in derived board class.
+		 * @brief Check for a button press. Used by `pressed[Button]` helper methods.
 		 */
-		virtual bool pressedF1();
+		inline bool __attribute__((always_inline)) pressed(const uint32_t mask) { return state.buttons & mask; }
 
-		/**
-		 * @brief Check for F1 button press. Can override in derived board class.
-		 */
-		virtual bool pressedF2();
-
-		/**
-		 * @brief Check for a button press.
-		 */
-		inline bool __attribute__((always_inline)) pressedButton(const uint32_t mask) { return (state.buttons & mask) == mask; }
-
-		inline bool __attribute__((always_inline)) pressedUp()    { return pressedButton(GAMEPAD_MASK_UP); }
-		inline bool __attribute__((always_inline)) pressedDown()  { return pressedButton(GAMEPAD_MASK_DOWN); }
-		inline bool __attribute__((always_inline)) pressedLeft()  { return pressedButton(GAMEPAD_MASK_LEFT); }
-		inline bool __attribute__((always_inline)) pressedRight() { return pressedButton(GAMEPAD_MASK_RIGHT); }
-		inline bool __attribute__((always_inline)) pressedB1()    { return pressedButton(GAMEPAD_MASK_B1); }
-		inline bool __attribute__((always_inline)) pressedB2()    { return pressedButton(GAMEPAD_MASK_B2); }
-		inline bool __attribute__((always_inline)) pressedB3()    { return pressedButton(GAMEPAD_MASK_B3); }
-		inline bool __attribute__((always_inline)) pressedB4()    { return pressedButton(GAMEPAD_MASK_B4); }
-		inline bool __attribute__((always_inline)) pressedL1()    { return pressedButton(GAMEPAD_MASK_L1); }
-		inline bool __attribute__((always_inline)) pressedR1()    { return pressedButton(GAMEPAD_MASK_R1); }
-		inline bool __attribute__((always_inline)) pressedL2()    { return pressedButton(GAMEPAD_MASK_L2); }
-		inline bool __attribute__((always_inline)) pressedR2()    { return pressedButton(GAMEPAD_MASK_R2); }
-		inline bool __attribute__((always_inline)) pressedS1()    { return pressedButton(GAMEPAD_MASK_S1); }
-		inline bool __attribute__((always_inline)) pressedS2()    { return pressedButton(GAMEPAD_MASK_S2); }
-		inline bool __attribute__((always_inline)) pressedL3()    { return pressedButton(GAMEPAD_MASK_L3); }
-		inline bool __attribute__((always_inline)) pressedR3()    { return pressedButton(GAMEPAD_MASK_R3); }
-		inline bool __attribute__((always_inline)) pressedA1()    { return pressedButton(GAMEPAD_MASK_A1); }
-		inline bool __attribute__((always_inline)) pressedA2()    { return pressedButton(GAMEPAD_MASK_A2); }
+		inline bool __attribute__((always_inline)) pressedUp()    { return pressed(GAMEPAD_MASK_UP); }
+		inline bool __attribute__((always_inline)) pressedDown()  { return pressed(GAMEPAD_MASK_DOWN); }
+		inline bool __attribute__((always_inline)) pressedLeft()  { return pressed(GAMEPAD_MASK_LEFT); }
+		inline bool __attribute__((always_inline)) pressedRight() { return pressed(GAMEPAD_MASK_RIGHT); }
+		inline bool __attribute__((always_inline)) pressedB1()    { return pressed(GAMEPAD_MASK_B1); }
+		inline bool __attribute__((always_inline)) pressedB2()    { return pressed(GAMEPAD_MASK_B2); }
+		inline bool __attribute__((always_inline)) pressedB3()    { return pressed(GAMEPAD_MASK_B3); }
+		inline bool __attribute__((always_inline)) pressedB4()    { return pressed(GAMEPAD_MASK_B4); }
+		inline bool __attribute__((always_inline)) pressedL1()    { return pressed(GAMEPAD_MASK_L1); }
+		inline bool __attribute__((always_inline)) pressedR1()    { return pressed(GAMEPAD_MASK_R1); }
+		inline bool __attribute__((always_inline)) pressedL2()    { return pressed(GAMEPAD_MASK_L2); }
+		inline bool __attribute__((always_inline)) pressedR2()    { return pressed(GAMEPAD_MASK_R2); }
+		inline bool __attribute__((always_inline)) pressedS1()    { return pressed(GAMEPAD_MASK_S1); }
+		inline bool __attribute__((always_inline)) pressedS2()    { return pressed(GAMEPAD_MASK_S2); }
+		inline bool __attribute__((always_inline)) pressedL3()    { return pressed(GAMEPAD_MASK_L3); }
+		inline bool __attribute__((always_inline)) pressedR3()    { return pressed(GAMEPAD_MASK_R3); }
+		inline bool __attribute__((always_inline)) pressedA1()    { return pressed(GAMEPAD_MASK_A1); }
+		inline bool __attribute__((always_inline)) pressedA2()    { return pressed(GAMEPAD_MASK_A2); }
+		inline bool __attribute__((always_inline)) pressedF1()    { return pressed(f1Mask); }
+		inline bool __attribute__((always_inline)) pressedF2()    { return pressed(f2Mask); }
 
 	protected:
 		/**
