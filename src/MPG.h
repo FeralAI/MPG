@@ -20,8 +20,11 @@
 class MPG
 {
 	public:
-		MPG(int debounceMS = 5, uint16_t f1Mask = (GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2), uint16_t f2Mask = (GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3))
-			: debounceMS(debounceMS), f1Mask(f1Mask), f2Mask(f2Mask), debouncer(debounceMS)
+		MPG(int debounceMS = 5)
+			: debounceMS(debounceMS)
+			, f1Mask((GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2))
+			, f2Mask((GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3))
+			, debouncer(debounceMS)
 		{
 
 		}
@@ -34,12 +37,12 @@ class MPG
 		/**
 		 * @brief The input mask for the F1 button
 		 */
-		const uint16_t f1Mask;
+		uint16_t f1Mask;
 
 		/**
 		 * @brief The input mask for the F2 button
 		 */
-		const uint16_t f2Mask;
+		uint16_t f2Mask;
 
 		/**
 		 * @brief The current D-pad mode.
