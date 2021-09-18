@@ -91,7 +91,7 @@ MPG provides some declarations and virtual methods that require implementation i
 
 * `MPG::setup()` - Use to configure pins, calibrate analog, etc.
 * `MPG::read()` - Use to fill the `MPG.state` class member, which is then used in other class methods
-* `GamepadDebouncer::getMillis()` - Used to get timing for checking debounce state (can be no-op if `debounceMS` set to `0`)
+* `getMillis()` - Used to get timing for checking debounce state (can be no-op if `debounceMS` set to `0`)
 
 An optimized Arduino `MPG` class implementation for a Leonardo might look like this:
 
@@ -138,7 +138,7 @@ An optimized Arduino `MPG` class implementation for a Leonardo might look like t
 /* Real implementation starts here... */
 
 // Define time function for gamepad debouncer
-uint32_t GamepadDebouncer::getMillis() { return millis(); }
+uint32_t getMillis() { return millis(); }
 
 void MPG::setup() {
   // Set to input (invert mask to set to 0)
@@ -157,20 +157,16 @@ void MPG::read() {
   // Get port states, invert since INPUT_PULLUP
   uint8_t ports[] = { ~PINB, ~PIND, ~PINF };
 
-  // No analog, but could read them here with analogRead()
-  state.lt = 0;
-  state.rt = 0;
-  state.lx = GAMEPAD_JOYSTICK_MID;
-  state.ly = GAMEPAD_JOYSTICK_MID;
-  state.rx = GAMEPAD_JOYSTICK_MID;
-  state.ry = GAMEPAD_JOYSTICK_MID;
-
-  // Read digital inputs
-  state.buttons = 0
+  // Read dpad inptus
+  state.dpad = 0
     | ((ports[PORTF_INDEX] >> PORT_PIN_UP    & 1)  ? GAMEPAD_MASK_UP    : 0)
     | ((ports[PORTF_INDEX] >> PORT_PIN_DOWN  & 1)  ? GAMEPAD_MASK_DOWN  : 0)
     | ((ports[PORTF_INDEX] >> PORT_PIN_LEFT  & 1)  ? GAMEPAD_MASK_LEFT  : 0)
     | ((ports[PORTF_INDEX] >> PORT_PIN_RIGHT & 1)  ? GAMEPAD_MASK_RIGHT : 0)
+  ;
+
+  // Read button inputs
+  state.buttons = 0
     | ((ports[PORTD_INDEX] >> PORT_PIN_K1 & 1)     ? GAMEPAD_MASK_B1    : 0)
     | ((ports[PORTD_INDEX] >> PORT_PIN_K2 & 1)     ? GAMEPAD_MASK_B2    : 0)
     | ((ports[PORTD_INDEX] >> PORT_PIN_P1 & 1)     ? GAMEPAD_MASK_B3    : 0)
@@ -184,6 +180,14 @@ void MPG::read() {
     | ((ports[PORTB_INDEX] >> PORT_PIN_LS & 1)     ? GAMEPAD_MASK_L3    : 0)
     | ((ports[PORTB_INDEX] >> PORT_PIN_RS & 1)     ? GAMEPAD_MASK_R3    : 0)
   ;
+
+  // No analog, but could read them here with analogRead() or fill outside of this method
+  state.lt = 0;
+  state.rt = 0;
+  state.lx = GAMEPAD_JOYSTICK_MID;
+  state.ly = GAMEPAD_JOYSTICK_MID;
+  state.rx = GAMEPAD_JOYSTICK_MID;
+  state.ry = GAMEPAD_JOYSTICK_MID;
 }
 ```
 
@@ -197,15 +201,19 @@ If your platform supports some form of persistent storage, like EEPROM, you can 
   * `save()`
   * `load()`
 * The `hotkey()` method is overridden to automatically save all options on change.
-* `MPGS` requires two methods in `GamepadStorage` to be defined:
-  * `GamepadStorage::get(int index, void *data, uint16_t size)`
-  * `GamepadStorage::set(int index, void *data, uint16_t size)`
+* `MPGS` requires four methods in `GamepadStorage` to be defined:
+  * `void GamepadStorage::get(int index, void *data, uint16_t size)`
+  * `void GamepadStorage::set(int index, void *data, uint16_t size)`
+  * `void GamepadStorage::start()`
+  * `void GamepadStorage::save()`
 
-Then implement the `GamepadStorage` class methods, something like this ATmega32U4 example:
+Implement the `MPG` class as previously described, then implement the `GamepadStorage` class methods:
 
 ```c++
 /*
  * storage.cpp
+ *
+ * Example storage for ATmega32U4.
  */
 
 #include <string.h>
@@ -228,6 +236,10 @@ void GamepadStorage::set(int index, void *data, uint16_t size)
   for (int i = 0; i < size; i++)
     EEPROM.put(index + i, buffer[i]);
 }
+
+// 32u4 doesn't need these, but others do!
+void GamepadStorage::start() { }
+void GamepadStorage::save() { }
 
 ```
 
@@ -254,20 +266,34 @@ MPG uses a generic button labeling for gamepad state, which is then converted to
 
 The MPG class contains helper methods for checking the state of each button, for instance `MPG::pressedB1()`, `MPG::pressedR3`, etc.
 
-There are also two virtual buttons for handling various gamepad functions - `F1` and `F2`. By default they are mapped to the following two-button combinations:
-
-* `F1` = `S1` + `S2`
-* `F2` = `L3` + `R3`
-
-The default button mapping can be overridden by extending the `MPG(S)` class and defining your own implementation for the `pressedF1` and `pressedF2` methods.
-
 ### Hotkeys
 
 MPG provides a predefined set of hotkeys for managing gamepad options. All options can be changed while running, and are persisted if gamepad storage is implemented.
 
+#### Function Buttons
+
+There are two virtual function buttons for handling hotkey actions - `F1` and `F2`. By default they are mapped to the following two-button combinations:
+
+* `F1` = `S1 + S2`
+* `F2` = `L3 + R3`
+
+The function button mapping can be overridden by setting the `MPG::f1Mask` and/or `MPG::f2Mask` class members:
+
+```c++
+MPGS gamepad(DEBOUNCE_TIME_MS);
+
+void setup()
+{
+  gamepad.f1Mask = (GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
+  gamepad.f2Mask = GAMEPAD_MASK_A2;
+}
+```
+
+The `GamepadState.h` file contains definitions for all gamepad input masks. Only button input (no D-pad) masks can be used for function mappings.
+
 #### Home Button
 
-If you do not have a dedicated Home button, you can activate it via the **`S1 + S2 + DPAD UP`** button combination.
+If you do not have a dedicated Home button, you can activate it via the **`F1 + DPAD UP`** button combination.
 
 > NOTE: The PS button in DirectInput/PS3 mode is currently not supported.
 
