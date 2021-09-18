@@ -2,13 +2,16 @@
  * Example MPG implementation using LUFA for ATmega32U4 boards.
  */
 
-#define HAS_STORAGE true
 #define DEBOUNCE_MILLIS 5
 
-#include <MPGS.h>
 #include <LUFA.h>
 #include "LUFADriver.h"
 
+// Define time function for gamepad debouncer
+#include <GamepadDebouncer.h>
+uint32_t getMillis() { return millis(); }
+
+#include <MPGS.h>
 MPGS mpg(DEBOUNCE_MILLIS); // The gamepad instance
 
 void setup()
@@ -39,13 +42,11 @@ void setup()
 void loop()
 {
 	static const uint8_t reportSize = mpg.getReportSize();  // Get report size from Gamepad instance
-	static void *report;                                    // Pointer to our HID report
 	static GamepadHotkey hotkey;                            // The last hotkey pressed
 
 	mpg.read();                                             // Read raw inputs
 	mpg.debounce();                                         // Run debouncing if enabled
 	hotkey = mpg.hotkey();                                  // Check hotkey presses (D-pad mode, SOCD mode, etc.), hotkey enum returned
 	mpg.process();                                          // Perform final input processing (SOCD cleaning, LS/RS emulation, etc.)
-	report = mpg.getReport();                               // Convert to USB report
-	sendReport(report, reportSize);                         // Send it!
+	sendReport(mpg.getReport(), reportSize);                // Convert and send it!
 }

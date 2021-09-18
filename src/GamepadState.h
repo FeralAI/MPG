@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include "GamepadEnums.h"
 
+#define GAMEPAD_BUTTON_COUNT 14
+
 /*
 	Gamepad button mapping table:
 
@@ -32,24 +34,25 @@
 	+--------+--------+---------+----------+----------+--------+
 */
 
-#define GAMEPAD_MASK_UP    (1L <<  0)
-#define GAMEPAD_MASK_DOWN  (1L <<  1)
-#define GAMEPAD_MASK_LEFT  (1L <<  2)
-#define GAMEPAD_MASK_RIGHT (1L <<  3)
-#define GAMEPAD_MASK_B1    (1L <<  4)
-#define GAMEPAD_MASK_B2    (1L <<  5)
-#define GAMEPAD_MASK_B3    (1L <<  6)
-#define GAMEPAD_MASK_B4    (1L <<  7)
-#define GAMEPAD_MASK_L1    (1L <<  8)
-#define GAMEPAD_MASK_R1    (1L <<  9)
-#define GAMEPAD_MASK_L2    (1L << 10)
-#define GAMEPAD_MASK_R2    (1L << 11)
-#define GAMEPAD_MASK_S1    (1L << 12)
-#define GAMEPAD_MASK_S2    (1L << 13)
-#define GAMEPAD_MASK_L3    (1L << 14)
-#define GAMEPAD_MASK_R3    (1L << 15)
-#define GAMEPAD_MASK_A1    (1L << 16)
-#define GAMEPAD_MASK_A2    (1L << 17)
+#define GAMEPAD_MASK_UP    (1 << 0)
+#define GAMEPAD_MASK_DOWN  (1 << 1)
+#define GAMEPAD_MASK_LEFT  (1 << 2)
+#define GAMEPAD_MASK_RIGHT (1 << 3)
+
+#define GAMEPAD_MASK_B1    (1 << 0)
+#define GAMEPAD_MASK_B2    (1 << 1)
+#define GAMEPAD_MASK_B3    (1 << 2)
+#define GAMEPAD_MASK_B4    (1 << 3)
+#define GAMEPAD_MASK_L1    (1 << 4)
+#define GAMEPAD_MASK_R1    (1 << 5)
+#define GAMEPAD_MASK_L2    (1 << 6)
+#define GAMEPAD_MASK_R2    (1 << 7)
+#define GAMEPAD_MASK_S1    (1 << 8)
+#define GAMEPAD_MASK_S2    (1 << 9)
+#define GAMEPAD_MASK_L3    (1 << 10)
+#define GAMEPAD_MASK_R3    (1 << 11)
+#define GAMEPAD_MASK_A1    (1 << 12)
+#define GAMEPAD_MASK_A2    (1 << 13)
 
 #define GAMEPAD_MASK_DPAD (GAMEPAD_MASK_UP | GAMEPAD_MASK_DOWN | GAMEPAD_MASK_LEFT | GAMEPAD_MASK_RIGHT)
 
@@ -57,9 +60,36 @@
 #define GAMEPAD_JOYSTICK_MID 0x7FFF
 #define GAMEPAD_JOYSTICK_MAX 0xFFFF
 
+const uint8_t dpadMasks[] =
+{
+	GAMEPAD_MASK_UP,
+	GAMEPAD_MASK_DOWN,
+	GAMEPAD_MASK_LEFT,
+	GAMEPAD_MASK_RIGHT,
+};
+
+const uint16_t buttonMasks[] =
+{
+	GAMEPAD_MASK_B1,
+	GAMEPAD_MASK_B2,
+	GAMEPAD_MASK_B3,
+	GAMEPAD_MASK_B4,
+	GAMEPAD_MASK_L1,
+	GAMEPAD_MASK_R1,
+	GAMEPAD_MASK_L2,
+	GAMEPAD_MASK_R2,
+	GAMEPAD_MASK_S1,
+	GAMEPAD_MASK_S2,
+	GAMEPAD_MASK_L3,
+	GAMEPAD_MASK_R3,
+	GAMEPAD_MASK_A1,
+	GAMEPAD_MASK_A2,
+};
+
 struct GamepadState
 {
-	uint32_t buttons;
+	uint8_t dpad;
+	uint16_t buttons;
 	uint16_t lx;
 	uint16_t ly;
 	uint16_t rx;

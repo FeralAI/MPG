@@ -1,88 +1,31 @@
 /*
  * SPDX-License-Identifier: MIT
  * SPDX-FileCopyrightText: Copyright (c) 2021 Jason Skuby (mytechtoybox.com)
- * SPDX-FileCopyrightText: Copyright (c) 2013 thomasfredericks
- *
- * Debouncer class ported from the Arduino Bounce2 library (MIT license).
  */
 
 #include "GamepadDebouncer.h"
 
-GamepadDebouncer::GamepadDebouncer() : previousMillis(0), intervalMillis(10), state(0) {}
-
-void GamepadDebouncer::setInterval(uint16_t intervalMillis)
+void GamepadDebouncer::debounce(GamepadState *state)
 {
-	this->intervalMillis = intervalMillis;
-}
+	uint32_t now = getMillis();
 
-void GamepadDebouncer::begin()
-{
-	state = 0;
-	if (readCurrentState())
+	for (int i = 0; i < 4; i++)
 	{
-		setStateFlag(DEBOUNCED_STATE | UNSTABLE_STATE);
-	}
-
-	previousMillis = getMillis();
-}
-
-bool GamepadDebouncer::update()
-{
-	unsetStateFlag(CHANGED_STATE);
-
-	bool readState = readCurrentState();
-
-	if (readState != getStateFlag(DEBOUNCED_STATE))
-	{
-		if (getMillis() - previousMillis >= intervalMillis)
+		if ((debounceState.dpad & dpadMasks[i]) != (state->dpad & dpadMasks[i]) && (now - dpadTime[i]) > debounceMS)
 		{
-			changeState();
+			debounceState.dpad ^= dpadMasks[i];
+			dpadTime[i] = now;
 		}
 	}
 
-	if (readState != getStateFlag(UNSTABLE_STATE))
+	for (int i = 0; i < GAMEPAD_BUTTON_COUNT; i++)
 	{
-		toggleStateFlag(UNSTABLE_STATE);
-		previousMillis = getMillis();
+		if ((debounceState.buttons & buttonMasks[i]) != (state->buttons & buttonMasks[i]) && (now - buttonTime[i]) > debounceMS)
+		{
+			debounceState.buttons ^= buttonMasks[i];
+			buttonTime[i] = now;
+		}
 	}
 
-	return changed();
-}
-
-unsigned long GamepadDebouncer::previousDuration() const
-{
-	return durationOfPreviousState;
-}
-
-unsigned long GamepadDebouncer::currentDuration() const
-{
-	return getMillis() - stateChangeLastTime;
-}
-
-inline void GamepadDebouncer::changeState()
-{
-	toggleStateFlag(DEBOUNCED_STATE);
-	setStateFlag(CHANGED_STATE);
-	durationOfPreviousState = getMillis() - stateChangeLastTime;
-	stateChangeLastTime = getMillis();
-}
-
-bool GamepadDebouncer::read() const
-{
-	return getStateFlag(DEBOUNCED_STATE);
-}
-
-bool GamepadDebouncer::rose() const
-{
-	return getStateFlag(DEBOUNCED_STATE) && getStateFlag(CHANGED_STATE);
-}
-
-bool GamepadDebouncer::fell() const
-{
-	return !getStateFlag(DEBOUNCED_STATE) && getStateFlag(CHANGED_STATE);
-}
-
-bool GamepadDebouncer::readCurrentState()
-{
-	return gamepadState->buttons & inputMask;
+	memcpy(state, &debounceState, sizeof(GamepadState));
 }

@@ -34,9 +34,6 @@
 #define PORTD_INDEX 1
 #define PORTF_INDEX 2
 
-// Define time function for gamepad debouncer
-uint32_t GamepadDebouncer::getMillis() { return millis(); }
-
 /**
  * Perform pin setup and any other initialization the board requires
  */
@@ -58,20 +55,15 @@ void MPG::read()
 	// Cache port states
 	uint8_t ports[] = { ~PINB, ~PIND, ~PINF };
 
-	// Static values for digital pad
-	state.lx = GAMEPAD_JOYSTICK_MID;
-	state.ly = GAMEPAD_JOYSTICK_MID;
-	state.rx = GAMEPAD_JOYSTICK_MID;
-	state.ry = GAMEPAD_JOYSTICK_MID;
-	state.lt = 0;
-	state.rt = 0;
-
-	// Gather raw inputs
-	state.buttons = 0
+	state.dpad = 0
 		| ((ports[PORTF_INDEX] >> PORT_PIN_UP     & 1) ? GAMEPAD_MASK_UP    : 0)
 		| ((ports[PORTF_INDEX] >> PORT_PIN_DOWN   & 1) ? GAMEPAD_MASK_DOWN  : 0)
 		| ((ports[PORTF_INDEX] >> PORT_PIN_LEFT   & 1) ? GAMEPAD_MASK_LEFT  : 0)
 		| ((ports[PORTF_INDEX] >> PORT_PIN_RIGHT  & 1) ? GAMEPAD_MASK_RIGHT : 0)
+	;
+
+	// Gather raw inputs
+	state.buttons = 0
 		| ((ports[PORTD_INDEX] >> PORT_PIN_K1     & 1) ? GAMEPAD_MASK_B1 : 0) // Generic: K1, Switch: B, Xbox: A
 		| ((ports[PORTD_INDEX] >> PORT_PIN_K2     & 1) ? GAMEPAD_MASK_B2 : 0) // Generic: K2, Switch: A, Xbox: B
 		| ((ports[PORTD_INDEX] >> PORT_PIN_P1     & 1) ? GAMEPAD_MASK_B3 : 0) // Generic: P1, Switch: Y, Xbox: X
