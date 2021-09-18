@@ -43,17 +43,10 @@ void loop()
 {
 	static const uint8_t reportSize = mpg.getReportSize();  // Get report size from Gamepad instance
 	static GamepadHotkey hotkey;                            // The last hotkey pressed
-	// static const uint32_t intervalMS = 1;
-	// static uint32_t nextRuntime = 0;
-
-	// if (millis() - nextRuntime < 0)
-	// 	return;
 
 	mpg.read();                                             // Read raw inputs
-	// mpg.debounce();                                         // Run debouncing if enabled
+	mpg.debounce();                                         // Run debouncing if enabled
 	hotkey = mpg.hotkey();                                  // Check hotkey presses (D-pad mode, SOCD mode, etc.), hotkey enum returned
 	mpg.process();                                          // Perform final input processing (SOCD cleaning, LS/RS emulation, etc.)
 	sendReport(mpg.getReport(), reportSize);                // Convert and send it!
-
-	// nextRuntime = millis() + intervalMS;
 }

@@ -20,14 +20,10 @@
 class MPG
 {
 	public:
-		MPG(int debounceMS = 5, uint32_t f1Mask = (GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2), uint32_t f2Mask = (GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3))
-			: debounceMS(debounceMS), f1Mask(f1Mask), f2Mask(f2Mask)
+		MPG(int debounceMS = 5, uint16_t f1Mask = (GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2), uint16_t f2Mask = (GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3))
+			: debounceMS(debounceMS), f1Mask(f1Mask), f2Mask(f2Mask), debouncer(debounceMS)
 		{
-			if (debounceMS > 0)
-			{
-				for (int i = 0; i < GAMEPAD_DIGITAL_INPUT_COUNT; i++)
-					debouncers[i].setGamepadState(state);
-			}
+
 		}
 
 		/**
@@ -38,12 +34,12 @@ class MPG
 		/**
 		 * @brief The input mask for the F1 button
 		 */
-		const uint32_t f1Mask;
+		const uint16_t f1Mask;
 
 		/**
 		 * @brief The input mask for the F2 button
 		 */
-		const uint32_t f2Mask;
+		const uint16_t f2Mask;
 
 		/**
 		 * @brief The current D-pad mode.
@@ -110,7 +106,7 @@ class MPG
 		/**
 		 * @brief Run debouncing algorithm against current state inputs
 		 */
-		void debounce();
+		inline void __attribute__((always_inline)) debounce() { debouncer.debounce(&state); }
 
 		/**
 		 * @brief Process the inputs before sending state to host
@@ -185,29 +181,9 @@ class MPG
 
 	protected:
 		/**
-		 * @brief Button debouncer instances.
+		 * @brief Button debouncer instance.
 		 */
-		GamepadDebouncer debouncers[GAMEPAD_DIGITAL_INPUT_COUNT] =
-		{
-			GamepadDebouncer(GAMEPAD_MASK_UP, debounceMS, true),
-			GamepadDebouncer(GAMEPAD_MASK_DOWN, debounceMS, true),
-			GamepadDebouncer(GAMEPAD_MASK_LEFT, debounceMS, true),
-			GamepadDebouncer(GAMEPAD_MASK_RIGHT, debounceMS, true),
-			GamepadDebouncer(GAMEPAD_MASK_B1, debounceMS),
-			GamepadDebouncer(GAMEPAD_MASK_B2, debounceMS),
-			GamepadDebouncer(GAMEPAD_MASK_B3, debounceMS),
-			GamepadDebouncer(GAMEPAD_MASK_B4, debounceMS),
-			GamepadDebouncer(GAMEPAD_MASK_L1, debounceMS),
-			GamepadDebouncer(GAMEPAD_MASK_R1, debounceMS),
-			GamepadDebouncer(GAMEPAD_MASK_L2, debounceMS),
-			GamepadDebouncer(GAMEPAD_MASK_R2, debounceMS),
-			GamepadDebouncer(GAMEPAD_MASK_S1, debounceMS),
-			GamepadDebouncer(GAMEPAD_MASK_S2, debounceMS),
-			GamepadDebouncer(GAMEPAD_MASK_L3, debounceMS),
-			GamepadDebouncer(GAMEPAD_MASK_R3, debounceMS),
-			GamepadDebouncer(GAMEPAD_MASK_A1, debounceMS),
-			GamepadDebouncer(GAMEPAD_MASK_A2, debounceMS),
-		};
+		GamepadDebouncer debouncer;
 };
 
 #endif

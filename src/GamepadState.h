@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include "GamepadEnums.h"
 
+#define GAMEPAD_BUTTON_COUNT 14
+
 /*
 	Gamepad button mapping table:
 
@@ -57,6 +59,32 @@
 #define GAMEPAD_JOYSTICK_MIN 0
 #define GAMEPAD_JOYSTICK_MID 0x7FFF
 #define GAMEPAD_JOYSTICK_MAX 0xFFFF
+
+const uint8_t dpadMasks[] =
+{
+	GAMEPAD_MASK_UP,
+	GAMEPAD_MASK_DOWN,
+	GAMEPAD_MASK_LEFT,
+	GAMEPAD_MASK_RIGHT,
+};
+
+const uint16_t buttonMasks[] =
+{
+	GAMEPAD_MASK_B1,
+	GAMEPAD_MASK_B2,
+	GAMEPAD_MASK_B3,
+	GAMEPAD_MASK_B4,
+	GAMEPAD_MASK_L1,
+	GAMEPAD_MASK_R1,
+	GAMEPAD_MASK_L2,
+	GAMEPAD_MASK_R2,
+	GAMEPAD_MASK_S1,
+	GAMEPAD_MASK_S2,
+	GAMEPAD_MASK_L3,
+	GAMEPAD_MASK_R3,
+	GAMEPAD_MASK_A1,
+	GAMEPAD_MASK_A2,
+};
 
 struct GamepadState
 {

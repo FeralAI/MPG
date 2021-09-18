@@ -9,30 +9,6 @@ static HIDReport hidReport;
 static SwitchReport switchReport;
 static XInputReport xinputReport;
 
-void MPG::debounce()
-{
-	for (int i = 0; i < GAMEPAD_DIGITAL_INPUT_COUNT; i++)
-	{
-		if (debouncers[i].update())
-		{
-			if (debouncers[i].isDpad)
-			{
-				if (debouncers[i].rose())
-					state.dpad |= debouncers[i].inputMask;
-				else
-					state.dpad &= ~(debouncers[i].inputMask);
-			}
-			else
-			{
-				if (debouncers[i].rose())
-					state.buttons |= debouncers[i].inputMask;
-				else
-					state.buttons &= ~(debouncers[i].inputMask);
-			}
-		}
-	}
-}
-
 void *MPG::getReport()
 {
 	switch (inputMode)
@@ -228,53 +204,60 @@ GamepadHotkey MPG::hotkey()
 	GamepadHotkey action = HOTKEY_NONE;
 	if (pressedF1())
 	{
-		switch (state.buttons & GAMEPAD_MASK_DPAD)
+		switch (state.dpad & GAMEPAD_MASK_DPAD)
 		{
 			case GAMEPAD_MASK_LEFT:
 				action = HOTKEY_DPAD_LEFT_ANALOG;
 				dpadMode = DPAD_MODE_LEFT_ANALOG;
-				state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
+				state.dpad = 0;
+				state.buttons &= ~(f1Mask);
 				break;
 
 			case GAMEPAD_MASK_RIGHT:
 				action = HOTKEY_DPAD_RIGHT_ANALOG;
 				dpadMode = DPAD_MODE_RIGHT_ANALOG;
-				state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
+				state.dpad = 0;
+				state.buttons &= ~(f1Mask);
 				break;
 
 			case GAMEPAD_MASK_DOWN:
 				action = HOTKEY_DPAD_DIGITAL;
 				dpadMode = DPAD_MODE_DIGITAL;
-				state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
+				state.dpad = 0;
+				state.buttons &= ~(f1Mask);
 				break;
 
 			case GAMEPAD_MASK_UP:
 				action = HOTKEY_HOME_BUTTON;
-				state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_S1 | GAMEPAD_MASK_S2);
+				state.dpad = 0;
+				state.buttons &= ~(f1Mask);
 				state.buttons |= GAMEPAD_MASK_A1; // Press the Home button
 				break;
 		}
 	}
 	else if (pressedF2())
 	{
-		switch (state.buttons & GAMEPAD_MASK_DPAD)
+		switch (state.dpad & GAMEPAD_MASK_DPAD)
 		{
 			case GAMEPAD_MASK_DOWN:
 				action = HOTKEY_SOCD_NEUTRAL;
 				socdMode = SOCD_MODE_NEUTRAL;
-				state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
+				state.dpad = 0;
+				state.buttons &= ~(f2Mask);
 				break;
 
 			case GAMEPAD_MASK_UP:
 				action = HOTKEY_SOCD_UP_PRIORITY;
 				socdMode = SOCD_MODE_UP_PRIORITY;
-				state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
+				state.dpad = 0;
+				state.buttons &= ~(f2Mask);
 				break;
 
 			case GAMEPAD_MASK_LEFT:
 				action = HOTKEY_SOCD_LAST_INPUT;
 				socdMode = SOCD_MODE_SECOND_INPUT_PRIORITY;
-				state.buttons &= ~(GAMEPAD_MASK_DPAD | GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3);
+				state.dpad = 0;
+				state.buttons &= ~(f2Mask);
 				break;
 		}
 	}
@@ -284,30 +267,40 @@ GamepadHotkey MPG::hotkey()
 
 void MPG::process()
 {
-	uint8_t dpadValue = runSOCDCleaner(socdMode, (state.buttons & GAMEPAD_MASK_DPAD));
+	state.dpad = runSOCDCleaner(socdMode, state.dpad);
 
 	switch (dpadMode)
 	{
 		case DpadMode::DPAD_MODE_LEFT_ANALOG:
-			state.lx = dpadToAnalogX(dpadValue);
-			state.ly = dpadToAnalogY(dpadValue);
-			dpadValue = 0;
+			if (!hasRightAnalogStick) {
+				state.rx = GAMEPAD_JOYSTICK_MID;
+				state.ry = GAMEPAD_JOYSTICK_MID;
+			}
+			state.lx = dpadToAnalogX(state.dpad);
+			state.ly = dpadToAnalogY(state.dpad);
+			state.dpad = 0;
 			break;
 
 		case DpadMode::DPAD_MODE_RIGHT_ANALOG:
-			state.rx = dpadToAnalogX(dpadValue);
-			state.ry = dpadToAnalogY(dpadValue);
-			dpadValue = 0;
+			if (!hasLeftAnalogStick) {
+				state.lx = GAMEPAD_JOYSTICK_MID;
+				state.ly = GAMEPAD_JOYSTICK_MID;
+			}
+			state.rx = dpadToAnalogX(state.dpad);
+			state.ry = dpadToAnalogY(state.dpad);
+			state.dpad = 0;
+			break;
+
+		default:
+			if (!hasLeftAnalogStick) {
+				state.lx = GAMEPAD_JOYSTICK_MID;
+				state.ly = GAMEPAD_JOYSTICK_MID;
+			}
+			if (!hasRightAnalogStick) {
+				state.rx = GAMEPAD_JOYSTICK_MID;
+				state.ry = GAMEPAD_JOYSTICK_MID;
+			}
 			break;
 	}
 
-	if (!hasLeftAnalogStick) {
-		state.lx = GAMEPAD_JOYSTICK_MID;
-		state.ly = GAMEPAD_JOYSTICK_MID;
-	}
-
-	if (!hasRightAnalogStick) {
-		state.rx = GAMEPAD_JOYSTICK_MID;
-		state.ry = GAMEPAD_JOYSTICK_MID;
-	}
 }
