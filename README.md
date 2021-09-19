@@ -389,6 +389,10 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue, const uint16_t wIndex
 }
 ```
 
+## Support
+
+If you would like to discuss features, issues, or anything else related to the MPG library please join the [MPG Discord channel](https://discord.gg/fxWDYxxg).
+
 ## Contributing
 
 The library is under active development, with any and all ideas and contributions welcome.
