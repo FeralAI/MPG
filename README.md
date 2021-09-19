@@ -3,6 +3,9 @@
 * [What is MPG?](#what-is-mpg)
   * [Features](#features)
 * [Usage](#usage)
+  * [Installation](#installation)
+    * [Arduino IDE](#arduino-ide)
+    * [PlatformIO](#platformio)
   * [MPG Class](#mpg-class)
   * [MPGS Class](#mpgs-class)
   * [Buttons](#buttons)
@@ -30,6 +33,32 @@ MPG is a fast and flexible C++ library for managing gamepad inputs. The goal is 
 * Overridable hotkeys for on-the-fly configuration
 
 ## Usage
+
+### Installation
+
+Download an MPG zip package from the [Releases](https://github.com/FeralAI/MPG/releases) section, then extract to a temp folder.
+
+#### Arduino IDE
+
+Place the extracted folder, e.g. `MPG-0.1.0`, in your Arduino Libraries folder. On Windows this will usually be in `C:\Users\%USERNAME%\Documents\Arduino\libraries`. Then open Arduino IDE and create a new sketch or load an example from `File > Examples > MPG`. A full 32u4 gamepad implementation and a naive benchmarking example sketches are included.
+
+#### PlatformIO
+
+You can either search the PIO Libraries tab for `MPG` or manually edit your `platformio.ini` to add MPG to the `lib_deps` property:
+
+```ini
+[env]
+platform = wizio-pico
+board = raspberry-pi-pico
+framework = baremetal
+build_type = release
+build_flags =
+  -D PICO_USB
+lib_deps =
+  feralai/MPG@^0.1.0
+```
+
+### Sample
 
 There are two gamepad classes available: `MPG` and `MPGS`. The `MPG` class is the base class with all of the input handling and report conversion methods, while `MPGS` extends the base class with some additional methods for persisting gamepad options. The main file of an MPG application will look something like this:
 
