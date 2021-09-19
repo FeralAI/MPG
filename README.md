@@ -40,7 +40,7 @@ Download an MPG zip package from the [Releases](https://github.com/FeralAI/MPG/r
 
 #### Arduino IDE
 
-Place the extracted folder, e.g. `MPG-0.1.0`, in your Arduino Libraries folder. On Windows this will usually be in `C:\Users\%USERNAME%\Documents\Arduino\libraries`. Then open Arduino IDE and create a new sketch or load an example from `File > Examples > MPG`. A full 32u4 gamepad implementation and a naive benchmarking example sketches are included.
+Place the extracted folder, e.g. `MPG-0.1.1`, in your Arduino Libraries folder. On Windows this will usually be in `C:\Users\%USERNAME%\Documents\Arduino\libraries`. Then open Arduino IDE and create a new sketch or load an example from `File > Examples > MPG`. A full 32u4 gamepad implementation and a naive benchmarking example sketches are included.
 
 #### PlatformIO
 
@@ -55,7 +55,7 @@ build_type = release
 build_flags =
   -D PICO_USB
 lib_deps =
-  feralai/MPG@^0.1.0
+  feralai/MPG@^0.1.1
 ```
 
 ### Sample
