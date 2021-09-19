@@ -1,16 +1,13 @@
 {
 	"name": "MPG",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"description": "C++ library for USB gamepad handling with support for XInput, DirectInput and Nintendo Switch.",
 	"keywords": "c++ baremetal gamepad hid dinput directinput switch xinput",
 	"authors": [
 		{
-			"name": "Jason Skuby",
-			"url": "https://mytechtoybox.com"
+			"name": "FeralAI",
+			"url": "https://github.com/FeralAI/MPG"
 		}
 	],
-	"dependencies": {
-		"GamepadDescriptors": ">0.0.1"
-	},
 	"license": "MIT"
 }
