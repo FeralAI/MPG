@@ -54,6 +54,13 @@
 #define GAMEPAD_MASK_A1    (1 << 12)
 #define GAMEPAD_MASK_A2    (1 << 13)
 
+// For detecting dpad as buttons
+
+#define GAMEPAD_MASK_DU    (1 << 16)
+#define GAMEPAD_MASK_DD    (1 << 17)
+#define GAMEPAD_MASK_DL    (1 << 18)
+#define GAMEPAD_MASK_DR    (1 << 19)
+
 #define GAMEPAD_MASK_DPAD (GAMEPAD_MASK_UP | GAMEPAD_MASK_DOWN | GAMEPAD_MASK_LEFT | GAMEPAD_MASK_RIGHT)
 
 #define GAMEPAD_JOYSTICK_MIN 0
