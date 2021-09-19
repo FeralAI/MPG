@@ -27,5 +27,6 @@ void GamepadDebouncer::debounce(GamepadState *state)
 		}
 	}
 
-	memcpy(state, &debounceState, sizeof(GamepadState));
+	memcpy(&state->dpad, &debounceState.dpad, sizeof(uint8_t));
+	memcpy(&state->buttons, &debounceState.buttons, sizeof(uint16_t));
 }
