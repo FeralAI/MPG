@@ -2,13 +2,14 @@
 
 * [What is MPG?](#what-is-mpg)
   * [Features](#features)
+* [Installation](#installation)
+  * [Arduino IDE](#arduino-ide)
+  * [PlatformIO](#platformio)
 * [Usage](#usage)
-  * [Installation](#installation)
-    * [Arduino IDE](#arduino-ide)
-    * [PlatformIO](#platformio)
   * [MPG Class](#mpg-class)
   * [MPGS Class](#mpgs-class)
   * [Buttons](#buttons)
+    * [Function Buttons](#function-buttons)
   * [Hotkeys](#hotkeys)
     * [Home Button](#home-button)
     * [D-pad Modes](#d-pad-modes)
@@ -18,7 +19,7 @@
 
 ## What is MPG?
 
-MPG is a fast and flexible C++ library for managing gamepad inputs. The goal is to provide a common interface to implement gamepad processing logic, without being tied to any specific platform. MPG makes no assumptions about your MCU/CPU or USB implementation. This makes it a great option to use across different architectures, and facilitates easy integration into existing projects.
+MPG is a C++ library for processing and converting gamepad inputs, with support for XInput, DirectInput and Nintendo Switch. MPG has a fast and flexible API, but also makes no assumptions about your implementation details. This makes it a great option to use across different architectures, and facilitates easy integration into existing projects. Just implement a few methods and BYO USB implementation and you're all set!
 
 ### Features
 
@@ -32,19 +33,21 @@ MPG is a fast and flexible C++ library for managing gamepad inputs. The goal is 
 * Supports common SOCD cleaning methods to prevent invalid directional inputs (👉😎👉 [/r/fightsticks](https://www.reddit.com/r/fightsticks/))
 * Overridable hotkeys for on-the-fly configuration
 
-## Usage
+## Installation
 
-### Installation
+MPG is available in the Arduino and PlatformIO library feeds. Just open the library manager for your platform and search for `MPG`.
 
-Download an MPG zip package from the [Releases](https://github.com/FeralAI/MPG/releases) section, then extract to a temp folder.
+A zip package is available in the [Releases](https://github.com/FeralAI/MPG/releases) section for manual installation.
 
-#### Arduino IDE
+### Arduino IDE
 
-Place the extracted folder, e.g. `MPG-0.1.1`, in your Arduino Libraries folder. On Windows this will usually be in `C:\Users\%USERNAME%\Documents\Arduino\libraries`. Then open Arduino IDE and create a new sketch or load an example from `File > Examples > MPG`. A full 32u4 gamepad implementation and a naive benchmarking example sketches are included.
+If you're manually installing from a release zip, place the extracted folder (e.g. `MPG-0.1.1`) in your Arduino Libraries folder. On Windows this will usually be in `C:\Users\%USERNAME%\Documents\Arduino\libraries`.
 
-#### PlatformIO
+MPG comes with a few example sketches: a full ATmega32U4 gamepad and a naive benchmarking application. The examples can be loaded from `File > Examples > MPG`.
 
-You can either search the PIO Libraries tab for `MPG` or manually edit your `platformio.ini` to add MPG to the `lib_deps` property:
+### PlatformIO
+
+An alterative installation option for PlatformIO is to edit `platformio.ini` and add MPG to the `lib_deps` property:
 
 ```ini
 [env]
@@ -58,7 +61,14 @@ lib_deps =
   feralai/MPG@^0.1.1
 ```
 
-### Sample
+PlatformIO will download the dependency once the `platformio.ini` file is saved.
+
+There are no example projects included, but the following projects are example implementations:
+
+* [GP2040](https://github.com/FeralAI/GP2040/) - Multi-platform Gamepad Firmware for RP2040 microcontrollers
+* [vsFIGHTER-Firmware](https://github.com/FeralAI/vsFIGHTER-Firmware/) - Firmware for vsFIGHTER controllers by Leaf Cutter Labs.
+
+## Usage
 
 There are two gamepad classes available: `MPG` and `MPGS`. The `MPG` class is the base class with all of the input handling and report conversion methods, while `MPGS` extends the base class with some additional methods for persisting gamepad options. The main file of an MPG application will look something like this:
 
@@ -224,7 +234,7 @@ Most of the code are the pin definitions and fancy formatting of bitwise button 
 
 ### MPGS Class
 
-If your platform supports some form of persistent storage, like EEPROM, you can use the `MPGS` class instead. The differences between the `MPG` and `MPGS` classes are:
+If your platform supports some form of persistent storage like EEPROM, you can use the `MPGS` class instead. The differences between the `MPG` and `MPGS` classes are:
 
 * `MPGS` class has two additional methods available for use:
   * `save()`
@@ -266,7 +276,7 @@ void GamepadStorage::set(int index, void *data, uint16_t size)
     EEPROM.put(index + i, buffer[i]);
 }
 
-// 32u4 doesn't need these, but others do!
+// 32u4 doesn't need these, but others might!
 void GamepadStorage::start() { }
 void GamepadStorage::save() { }
 
@@ -295,10 +305,6 @@ MPG uses a generic button labeling for gamepad state, which is then converted to
 
 The MPG class contains helper methods for checking the state of each button, for instance `MPG::pressedB1()`, `MPG::pressedR3`, etc.
 
-### Hotkeys
-
-MPG provides a predefined set of hotkeys for managing gamepad options. All options can be changed while running, and are persisted if gamepad storage is implemented.
-
 #### Function Buttons
 
 There are two virtual function buttons for handling hotkey actions - `F1` and `F2`. By default they are mapped to the following two-button combinations:
@@ -307,6 +313,10 @@ There are two virtual function buttons for handling hotkey actions - `F1` and `F
 * `F2` = `L3 + R3`
 
 The function button mapping can be overridden by setting the `MPG::f1Mask` and/or `MPG::f2Mask` class members:
+
+### Hotkeys
+
+MPG provides a predefined set of hotkeys for managing gamepad options. All options can be changed while running, and are persisted if gamepad storage is implemented.
 
 ```c++
 MPGS gamepad(DEBOUNCE_TIME_MS);
@@ -346,11 +356,11 @@ Simultaneous Opposite Cardinal Direction (SOCD) cleaning will ensure the control
 
 MPG includes a set of USB descriptors and report data structures for the supported input types. There are 5 `get` methods available to make descriptor integration easier:
 
-* `static const uint16_t *getStringDescriptor(uint16_t *size, InputMode mode, uint8_t index)`
-* `static const uint8_t *getConfigurationDescriptor(uint16_t *size, InputMode mode)`
-* `static const uint8_t *getDeviceDescriptor(uint16_t *size, InputMode mode)`
-* `static const uint8_t *getHIDDescriptor(uint16_t *size, InputMode mode)` *(not used for XInput)*
-* `static const uint8_t *getHIDReport(uint16_t *size, InputMode mode)` *(not used for XInput)*
+* `uint16_t *getStringDescriptor(uint16_t *size, InputMode mode, uint8_t index)`
+* `uint8_t *getConfigurationDescriptor(uint16_t *size, InputMode mode)`
+* `uint8_t *getDeviceDescriptor(uint16_t *size, InputMode mode)`
+* `uint8_t *getHIDDescriptor(uint16_t *size, InputMode mode)` *(not used for XInput)*
+* `uint8_t *getHIDReport(uint16_t *size, InputMode mode)` *(not used for XInput)*
 
 All functions take in a pointer to a size variable and the `InputMode` (`getStringDescriptor` also requires the string index), and return a pointer to the selected descriptor. An example of usage:
 
