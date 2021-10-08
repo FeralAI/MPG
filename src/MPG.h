@@ -66,6 +66,7 @@ class MPG
 		{
 			.dpad = 0,
 			.buttons = 0,
+			.aux = 0,
 			.lx = GAMEPAD_JOYSTICK_MID,
 			.ly = GAMEPAD_JOYSTICK_MID,
 			.rx = GAMEPAD_JOYSTICK_MID,
