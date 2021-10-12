@@ -154,12 +154,12 @@ class MPG
 		/**
 		 * @brief Check for a button press. Used by `pressed[Button]` helper methods.
 		 */
-		inline bool __attribute__((always_inline)) pressedButton(const uint16_t mask) { return state.buttons & mask; }
+		inline bool __attribute__((always_inline)) pressedButton(const uint16_t mask) { return (state.buttons & mask) == mask; }
 
 		/**
 		 * @brief Check for a dpad press. Used by `pressed[Dpad]` helper methods.
 		 */
-		inline bool __attribute__((always_inline)) pressedDpad(const uint8_t mask) { return state.dpad & mask; }
+		inline bool __attribute__((always_inline)) pressedDpad(const uint8_t mask) { return (state.dpad & mask) == mask; }
 
 		inline bool __attribute__((always_inline)) pressedUp()    { return pressedDpad(GAMEPAD_MASK_UP); }
 		inline bool __attribute__((always_inline)) pressedDown()  { return pressedDpad(GAMEPAD_MASK_DOWN); }
