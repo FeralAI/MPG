@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include "GamepadEnums.h"
+#include "GamepadOptions.h"
 #include "GamepadConfig.h"
 #include "GamepadDescriptors.h"
 #include "GamepadState.h"
@@ -47,17 +48,12 @@ class MPG
 		/**
 		 * @brief The current D-pad mode.
 		 */
-		DpadMode dpadMode = DPAD_MODE_DIGITAL;
-
-		/**
-		 * @brief The current input mode.
-		 */
-		InputMode inputMode = INPUT_MODE_XINPUT;
-
-		/**
-		 * @brief The current SOCD cleaning mode.
-		 */
-		SOCDMode socdMode = SOCD_MODE_UP_PRIORITY;
+		GamepadOptions options =
+		{
+			.inputMode = InputMode::INPUT_MODE_XINPUT,
+			.dpadMode = DpadMode::DPAD_MODE_DIGITAL,
+			.socdMode = SOCDMode::SOCD_MODE_NEUTRAL,
+		};
 
 		/**
 		 * @brief The current gamepad state object.

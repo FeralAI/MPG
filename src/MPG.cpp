@@ -11,7 +11,7 @@ static XInputReport xinputReport;
 
 void *MPG::getReport()
 {
-	switch (inputMode)
+	switch (options.inputMode)
 	{
 		case INPUT_MODE_XINPUT:
 			xinputReport = getXInputReport();
@@ -29,7 +29,7 @@ void *MPG::getReport()
 
 uint16_t MPG::getReportSize()
 {
-	switch (inputMode)
+	switch (options.inputMode)
 	{
 		case INPUT_MODE_XINPUT:
 			return sizeof(XInputReport);
@@ -194,21 +194,21 @@ GamepadHotkey MPG::hotkey()
 		{
 			case GAMEPAD_MASK_LEFT:
 				action = HOTKEY_DPAD_LEFT_ANALOG;
-				dpadMode = DPAD_MODE_LEFT_ANALOG;
+				options.dpadMode = DPAD_MODE_LEFT_ANALOG;
 				state.dpad = 0;
 				state.buttons &= ~(f1Mask);
 				break;
 
 			case GAMEPAD_MASK_RIGHT:
 				action = HOTKEY_DPAD_RIGHT_ANALOG;
-				dpadMode = DPAD_MODE_RIGHT_ANALOG;
+				options.dpadMode = DPAD_MODE_RIGHT_ANALOG;
 				state.dpad = 0;
 				state.buttons &= ~(f1Mask);
 				break;
 
 			case GAMEPAD_MASK_DOWN:
 				action = HOTKEY_DPAD_DIGITAL;
-				dpadMode = DPAD_MODE_DIGITAL;
+				options.dpadMode = DPAD_MODE_DIGITAL;
 				state.dpad = 0;
 				state.buttons &= ~(f1Mask);
 				break;
@@ -227,21 +227,21 @@ GamepadHotkey MPG::hotkey()
 		{
 			case GAMEPAD_MASK_DOWN:
 				action = HOTKEY_SOCD_NEUTRAL;
-				socdMode = SOCD_MODE_NEUTRAL;
+				options.socdMode = SOCD_MODE_NEUTRAL;
 				state.dpad = 0;
 				state.buttons &= ~(f2Mask);
 				break;
 
 			case GAMEPAD_MASK_UP:
 				action = HOTKEY_SOCD_UP_PRIORITY;
-				socdMode = SOCD_MODE_UP_PRIORITY;
+				options.socdMode = SOCD_MODE_UP_PRIORITY;
 				state.dpad = 0;
 				state.buttons &= ~(f2Mask);
 				break;
 
 			case GAMEPAD_MASK_LEFT:
 				action = HOTKEY_SOCD_LAST_INPUT;
-				socdMode = SOCD_MODE_SECOND_INPUT_PRIORITY;
+				options.socdMode = SOCD_MODE_SECOND_INPUT_PRIORITY;
 				state.dpad = 0;
 				state.buttons &= ~(f2Mask);
 				break;
@@ -253,9 +253,9 @@ GamepadHotkey MPG::hotkey()
 
 void MPG::process()
 {
-	state.dpad = runSOCDCleaner(socdMode, state.dpad);
+	state.dpad = runSOCDCleaner(options.socdMode, state.dpad);
 
-	switch (dpadMode)
+	switch (options.dpadMode)
 	{
 		case DpadMode::DPAD_MODE_LEFT_ANALOG:
 			if (!hasRightAnalogStick) {
