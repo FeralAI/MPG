@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include "GamepadEnums.h"
+#include "GamepadOptions.h"
 #include "GamepadConfig.h"
 #include "GamepadDescriptors.h"
 #include "GamepadState.h"
@@ -47,17 +48,12 @@ class MPG
 		/**
 		 * @brief The current D-pad mode.
 		 */
-		DpadMode dpadMode = DPAD_MODE_DIGITAL;
-
-		/**
-		 * @brief The current input mode.
-		 */
-		InputMode inputMode = INPUT_MODE_XINPUT;
-
-		/**
-		 * @brief The current SOCD cleaning mode.
-		 */
-		SOCDMode socdMode = SOCD_MODE_UP_PRIORITY;
+		GamepadOptions options =
+		{
+			.inputMode = InputMode::INPUT_MODE_XINPUT,
+			.dpadMode = DpadMode::DPAD_MODE_DIGITAL,
+			.socdMode = SOCDMode::SOCD_MODE_NEUTRAL,
+		};
 
 		/**
 		 * @brief The current gamepad state object.
@@ -155,12 +151,12 @@ class MPG
 		/**
 		 * @brief Check for a button press. Used by `pressed[Button]` helper methods.
 		 */
-		inline bool __attribute__((always_inline)) pressedButton(const uint16_t mask) { return state.buttons & mask; }
+		inline bool __attribute__((always_inline)) pressedButton(const uint16_t mask) { return (state.buttons & mask) == mask; }
 
 		/**
 		 * @brief Check for a dpad press. Used by `pressed[Dpad]` helper methods.
 		 */
-		inline bool __attribute__((always_inline)) pressedDpad(const uint8_t mask) { return state.dpad & mask; }
+		inline bool __attribute__((always_inline)) pressedDpad(const uint8_t mask) { return (state.dpad & mask) == mask; }
 
 		inline bool __attribute__((always_inline)) pressedUp()    { return pressedDpad(GAMEPAD_MASK_UP); }
 		inline bool __attribute__((always_inline)) pressedDown()  { return pressedDpad(GAMEPAD_MASK_DOWN); }

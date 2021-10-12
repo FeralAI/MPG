@@ -8,39 +8,18 @@
 
 #include <stdint.h>
 
-#include "GamepadEnums.h"
+#include "GamepadOptions.h"
 
-#ifndef STORAGE_INPUT_MODE_INDEX
-#define STORAGE_INPUT_MODE_INDEX 0
-#endif
-
-#ifndef STORAGE_DPAD_MODE_INDEX
-#define STORAGE_DPAD_MODE_INDEX 4
-#endif
-
-#ifndef STORAGE_SOCD_MODE_INDEX
-#define STORAGE_SOCD_MODE_INDEX 8
-#endif
-
-#define STORAGE_FIRST_AVAILBLE_INDEX 12
+#define STORAGE_FIRST_AVAILBLE_INDEX 2048
 
 class GamepadStorage
 {
 	public:
-		virtual void get(int index, void *data, uint16_t size);
-		virtual void set(int index, void *data, uint16_t size);
-
 		virtual void start();
 		virtual void save();
 
-		DpadMode getDpadMode();
-		void setDpadMode(DpadMode mode);
-
-		InputMode getInputMode();
-		void setInputMode(InputMode mode);
-
-		SOCDMode getSOCDMode();
-		void setSOCDMode(SOCDMode mode);
+		GamepadOptions getGamepadOptions();
+		void setGamepadOptions(GamepadOptions options);
 };
 
 static GamepadStorage GamepadStore;
