@@ -89,7 +89,7 @@ void setup() {
   mpg.read();  // Perform an initial button read so we can set input mode
 
   // Use the inlined `pressed` convenience methods
-  InputMode inputMode = mpg.inputMode;
+  InputMode inputMode = mpg.options.inputMode;
   if (mpg.pressedR3())
     inputMode = INPUT_MODE_HID;
   else if (mpg.pressedS1())
@@ -97,14 +97,14 @@ void setup() {
   else if (mpg.pressedS2())
     inputMode = INPUT_MODE_XINPUT;
 
-  if (inputMode != mpg.inputMode)
+  if (inputMode != mpg.options.inputMode)
   {
-    mpg.inputMode = inputMode;
+    mpg.options.inputMode = inputMode;
     mpg.save(); // Input mode changed...better save it! (MPGS class only)
   }
 
   // TODO: Add your USB initialization logic here, something like:
-  // setupHardware(mpg.inputMode);
+  // setupHardware(mpg.options.inputMode);
 }
 
 void loop() {
@@ -240,11 +240,9 @@ If your platform supports some form of persistent storage like EEPROM, you can u
   * `save()`
   * `load()`
 * The `hotkey()` method is overridden to automatically save all options on change.
-* `MPGS` requires four methods in `GamepadStorage` to be defined:
-  * `void GamepadStorage::get(int index, void *data, uint16_t size)`
-  * `void GamepadStorage::set(int index, void *data, uint16_t size)`
-  * `void GamepadStorage::start()`
-  * `void GamepadStorage::save()`
+* `MPGS` requires two methods from `GamepadStorage.h` to be defined:
+  * `GamepadOptions GamepadStorage::getGamepadOptions();`
+  * `void GamepadStorage::setGamepadOptions(GamepadOptions options);`
 
 Implement the `MPG` class as previously described, then implement the `GamepadStorage` class methods:
 
@@ -255,25 +253,23 @@ Implement the `MPG` class as previously described, then implement the `GamepadSt
  * Example storage for ATmega32U4.
  */
 
-#include <string.h>
 #include <GamepadStorage.h>
 #include <EEPROM.h>
 
-void GamepadStorage::get(int index, void *data, uint16_t size)
-{
-  uint8_t buffer[size] = { };
-  for (int i = 0; i < size; i++)
-    EEPROM.get(index + i, buffer[i]);
+GamepadOptions GamepadStorage::getGamepadOptions() {
+  GamepadOptions options =
+  {
+    .inputMode = InputMode::INPUT_MODE_XINPUT,
+    .dpadMode = DpadMode::DPAD_MODE_DIGITAL,
+    .socdMode = SOCDMode::SOCD_MODE_NEUTRAL,
+  };
 
-  memcpy(data, buffer, size);
+  EEPROM.get(0, options);
+  return options;
 }
 
-void GamepadStorage::set(int index, void *data, uint16_t size)
-{
-  uint8_t buffer[size] = { };
-  memcpy(buffer, data, size);
-  for (int i = 0; i < size; i++)
-    EEPROM.put(index + i, buffer[i]);
+void GamepadStorage::setGamepadOptions(GamepadOptions options) {
+  EEPROM.put(0, options);
 }
 
 // 32u4 doesn't need these, but others might!

@@ -1,22 +1,22 @@
-#include <string.h>
 #include <GamepadStorage.h>
 #include <EEPROM.h>
 
-void GamepadStorage::get(int index, void *data, uint16_t size)
+GamepadOptions GamepadStorage::getGamepadOptions()
 {
-	uint8_t buffer[size] = { };
-	for (int i = 0; i < size; i++)
-		EEPROM.get(index + i, buffer[i]);
+  GamepadOptions options =
+  {
+    .inputMode = InputMode::INPUT_MODE_XINPUT,
+    .dpadMode = DpadMode::DPAD_MODE_DIGITAL,
+    .socdMode = SOCDMode::SOCD_MODE_NEUTRAL,
+  };
 
-	memcpy(data, buffer, size);
+  EEPROM.get(0, options);
+  return options;
 }
 
-void GamepadStorage::set(int index, void *data, uint16_t size)
+void GamepadStorage::setGamepadOptions(GamepadOptions options)
 {
-	uint8_t buffer[size] = { };
-	memcpy(buffer, data, size);
-	for (int i = 0; i < size; i++)
-		EEPROM.put(index + i, buffer[i]);
+  EEPROM.put(0, options);
 }
 
 void GamepadStorage::start() { }

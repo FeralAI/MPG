@@ -21,7 +21,7 @@ void setup()
 	mpg.read();  // Perform an initial button read so we can set input mode
 
 	// Use the inlined `pressed` convenience methods
-	InputMode inputMode = mpg.inputMode;
+	InputMode inputMode = mpg.options.inputMode;
 	if (mpg.pressedR3())
 		inputMode = INPUT_MODE_HID;
 	else if (mpg.pressedS1())
@@ -29,14 +29,14 @@ void setup()
 	else if (mpg.pressedS2())
 		inputMode = INPUT_MODE_XINPUT;
 
-	if (inputMode != mpg.inputMode)
+	if (inputMode != mpg.options.inputMode)
 	{
-		mpg.inputMode = inputMode;
+		mpg.options.inputMode = inputMode;
 		mpg.save();
 	}
 
 	// Initialize USB device driver
-	setupHardware(mpg.inputMode);
+	setupHardware(mpg.options.inputMode);
 }
 
 void loop()
