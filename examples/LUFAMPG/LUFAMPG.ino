@@ -14,6 +14,10 @@ uint32_t getMillis() { return millis(); }
 #include <MPGS.h>
 MPGS mpg(DEBOUNCE_MILLIS); // The gamepad instance
 
+char USB_STRING_MANUFACTURER[] = "FeralAI";
+char USB_STRING_PRODUCT[] = "MPG Sample Gamepad";
+char USB_STRING_VERSION[] = "1.0";
+
 void setup()
 {
 	mpg.setup(); // Runs your custom setup logic

@@ -76,6 +76,24 @@ static const uint8_t *getHIDReport(uint16_t *size, InputMode mode)
 	}
 }
 
+// Convert ASCII string into UTF-16
+static const uint16_t *convertStringDescriptor(uint16_t *payloadSize, const char *str, int charCount)
+{
+	static uint16_t payload[32];
+
+	// Cap at max char
+	if (charCount > 31)
+		charCount = 31;
+
+	for (uint8_t i = 0; i < charCount; i++)
+		payload[1 + i] = str[i];
+
+	// first byte is length (including header), second byte is string type
+	*payloadSize = (2 * charCount + 2);
+	payload[0] = (0x03 << 8) | *payloadSize;
+	return payload;
+}
+
 static const uint16_t *getStringDescriptor(uint16_t *size, InputMode mode, uint8_t index)
 {
 	static uint16_t utf16Descriptor[32];
@@ -85,12 +103,11 @@ static const uint16_t *getStringDescriptor(uint16_t *size, InputMode mode, uint8
 
 	if (index == 0)
 	{
-		memcpy(&utf16Descriptor[1], xinput_string_descriptors[0], 2);
+		str = (const char *)xinput_string_descriptors[0];
 		charCount = 1;
 	}
 	else
 	{
-		// Convert ASCII string into UTF-16
 		switch (mode)
 		{
 			case INPUT_MODE_XINPUT:
@@ -106,22 +123,10 @@ static const uint16_t *getStringDescriptor(uint16_t *size, InputMode mode, uint8
 				break;
 		}
 
-		// Cap at max char
 		charCount = strlen(str);
-		if (charCount > 31)
-			charCount = 31;
-
-		for (uint8_t i = 0; i < charCount; i++)
-		{
-			utf16Descriptor[1 + i] = str[i];
-		}
 	}
 
-	// first byte is length (including header), second byte is string type
-	uint8_t payloadSize = (2 * charCount + 2);
-	utf16Descriptor[0] = (0x03 << 8) | payloadSize;
-	*size = payloadSize;
-	return utf16Descriptor;
+	return convertStringDescriptor(size, str, charCount);
 }
 
 #endif

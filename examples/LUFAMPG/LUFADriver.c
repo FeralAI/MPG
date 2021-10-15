@@ -81,7 +81,21 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue, const uint16_t wIndex
 			break;
 
 		case DTYPE_String:
-			*address = getStringDescriptor(&size, inputMode, descriptorIndex);
+			switch (descriptorIndex)
+			{
+				case 1:
+					*address = convertStringDescriptor(&size, USB_STRING_MANUFACTURER, strlen(USB_STRING_MANUFACTURER));
+					break;
+				case 2:
+					*address = convertStringDescriptor(&size, USB_STRING_PRODUCT, strlen(USB_STRING_PRODUCT));
+					break;
+				case 3:
+					*address = convertStringDescriptor(&size, USB_STRING_VERSION, strlen(USB_STRING_VERSION));
+					break;
+				default:
+					*address = getStringDescriptor(&size, inputMode, descriptorIndex);
+					break;
+			}
 			break;
 
 		case HID_DTYPE_HID:
