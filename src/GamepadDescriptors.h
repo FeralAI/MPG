@@ -94,32 +94,39 @@ static const uint16_t *convertStringDescriptor(uint16_t *payloadSize, const char
 	return payload;
 }
 
-static const uint16_t *getStringDescriptor(uint16_t *size, InputMode mode, uint8_t index)
+static const uint16_t *getStringDescriptor(uint16_t *size, InputMode mode, uint8_t index, uint8_t macAddress[6] = nullptr)
 {
-	static uint16_t utf16Descriptor[32];
-
 	uint8_t charCount;
-	const char *str;
+	char *str;
 
 	if (index == 0)
 	{
-		str = (const char *)xinput_string_descriptors[0];
+		str = (char *)xinput_string_descriptors[0];
 		charCount = 1;
+	}
+	else if (index == 5)
+	{
+		// Convert MAC address into UTF-16
+		for (int i = 0; i < 6; i++)
+		{
+			str[1 + charCount++] = "0123456789ABCDEF"[(macAddress[i] >> 4) & 0xf];
+			str[1 + charCount++] = "0123456789ABCDEF"[(macAddress[i] >> 0) & 0xf];
+		}
 	}
 	else
 	{
 		switch (mode)
 		{
 			case INPUT_MODE_XINPUT:
-				str = (const char *)xinput_string_descriptors[index];
+				str = (char *)xinput_string_descriptors[index];
 				break;
 
 			case INPUT_MODE_SWITCH:
-				str = (const char *)switch_string_descriptors[index];
+				str = (char *)switch_string_descriptors[index];
 				break;
 
 			default:
-				str = (const char *)hid_string_descriptors[index];
+				str = (char *)hid_string_descriptors[index];
 				break;
 		}
 
