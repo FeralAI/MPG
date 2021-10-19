@@ -12,6 +12,8 @@
 #include "descriptors/SwitchDescriptors.h"
 #include "descriptors/XInputDescriptors.h"
 
+extern uint8_t macAddress[6];
+
 static const uint8_t *getConfigurationDescriptor(uint16_t *size, InputMode mode)
 {
 	switch (mode)
@@ -94,7 +96,7 @@ static const uint16_t *convertStringDescriptor(uint16_t *payloadSize, const char
 	return payload;
 }
 
-static const uint16_t *getStringDescriptor(uint16_t *size, InputMode mode, uint8_t index, uint8_t macAddress[6] = nullptr)
+static const uint16_t *getStringDescriptor(uint16_t *size, InputMode mode, uint8_t index)
 {
 	uint8_t charCount;
 	char *str;

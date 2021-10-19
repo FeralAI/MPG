@@ -12,6 +12,7 @@ typedef enum
 	INPUT_MODE_XINPUT,
 	INPUT_MODE_SWITCH,
 	INPUT_MODE_HID,
+	INPUT_MODE_CONFIG = 255,
 } InputMode;
 
 // The available stick emulation modes
