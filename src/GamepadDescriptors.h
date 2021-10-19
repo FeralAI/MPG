@@ -12,7 +12,8 @@
 #include "descriptors/SwitchDescriptors.h"
 #include "descriptors/XInputDescriptors.h"
 
-extern uint8_t macAddress[6];
+// Default value used for networking, override if necessary
+static uint8_t macAddress[6] = { 0x02, 0x02, 0x84, 0x6A, 0x96, 0x00 };
 
 static const uint8_t *getConfigurationDescriptor(uint16_t *size, InputMode mode)
 {
