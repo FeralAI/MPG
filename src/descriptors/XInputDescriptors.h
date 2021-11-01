@@ -78,56 +78,51 @@ static const uint8_t xinput_device_descriptor[] =
 
 static const uint8_t xinput_configuration_descriptor[] =
 {
-	//Configuration Descriptor:
-	0x09,       // bLength
-	0x02,       // bDescriptorType
-	0x30, 0x00, // wTotalLength   (48 bytes)
-	0x01,       // bNumInterfaces
-	0x01,       // bConfigurationValue
-	0x00,       // iConfiguration
-	0x80,       // bmAttributes   (Bus-powered Device)
-	0xFA,       // bMaxPower      (500 mA)
+	0x09,        // bLength
+	0x02,        // bDescriptorType (Configuration)
+	0x30, 0x00,  // wTotalLength 48
+	0x01,        // bNumInterfaces 1
+	0x01,        // bConfigurationValue
+	0x00,        // iConfiguration (String Index)
+	0x80,        // bmAttributes
+	0xFA,        // bMaxPower 500mA
 
-	//Interface Descriptor:
-	0x09,       // bLength
-	0x04,       // bDescriptorType
-	0x00,       // bInterfaceNumber
-	0x00,       // bAlternateSetting
-	0x02,       // bNumEndPoints
-	0xFF,       // bInterfaceClass      (Vendor specific)
-	0x5D,       // bInterfaceSubClass
-	0x01,       // bInterfaceProtocol
-	0x00,       // iInterface
+	0x09,        // bLength
+	0x04,        // bDescriptorType (Interface)
+	0x00,        // bInterfaceNumber 0
+	0x00,        // bAlternateSetting
+	0x02,        // bNumEndpoints 2
+	0xFF,        // bInterfaceClass
+	0x5D,        // bInterfaceSubClass
+	0x01,        // bInterfaceProtocol
+	0x00,        // iInterface (String Index)
 
-	//Unknown HID Descriptor:
-	0x10,       // bLength
-	0x21,       // bDescriptorType (HID)
-	0x10, 0x01, // bcdHID 1.10
-	0x01,	      // bCountryCode
-	0x24,	      // bNumDescriptors
-	0x81,	      // bDescriptorType[0] (Unknown 0x81)
-	0x14, 0x03, // wDescriptorLength[0] 788
-	0x00,       // bDescriptorType[1] (Unknown 0x00)
-	0x03, 0x13, // wDescriptorLength[1] 4867
-	0x02,       // bDescriptorType[2] (Unknown 0x02)
-	0x00, 0x03, // wDescriptorLength[2] 768
-	0x00,       // bDescriptorType[3] (Unknown 0x00)
+	0x10,        // bLength
+	0x21,        // bDescriptorType (HID)
+	0x10, 0x01,  // bcdHID 1.10
+	0x01,        // bCountryCode
+	0x24,        // bNumDescriptors
+	0x81,        // bDescriptorType[0] (Unknown 0x81)
+	0x14, 0x03,  // wDescriptorLength[0] 788
+	0x00,        // bDescriptorType[1] (Unknown 0x00)
+	0x03, 0x13,  // wDescriptorLength[1] 4867
+	0x01,        // bDescriptorType[2] (Unknown 0x02)
+	0x00, 0x03,  // wDescriptorLength[2] 768
+	0x00,        // bDescriptorType[3] (Unknown 0x00)
 
-	//Endpoint Descriptor:
-	0x07,       // bLength
-	0x05,       // bDescriptorType
-	0x81,       // bEndpointAddress  (IN endpoint 1)
-	0x03,       // bmAttributes      (Transfer: Interrupt / Synch: None / Usage: Data)
-	0x20, 0x00, // wMaxPacketSize    (1 x 32 bytes)
-	0x01,       // bInterval         (1 frames)
+	0x07,        // bLength
+	0x05,        // bDescriptorType (Endpoint)
+	0x81,        // bEndpointAddress (IN/D2H)
+	0x03,        // bmAttributes (Interrupt)
+	0x20, 0x00,  // wMaxPacketSize 32
+	0x01,        // bInterval 1 (unit depends on device speed)
 
-	//Endpoint Descriptor:
-	0x07,       // bLength
-	0x05,       // bDescriptorType
-	0x02,       // bEndpointAddress  (OUT endpoint 2)
-	0x03,       // bmAttributes      (Transfer: Interrupt / Synch: None / Usage: Data)
-	0x20, 0x00, // wMaxPacketSize    (1 x 32 bytes)
-	0x08,       // bInterval         (8 frames)
+	0x07,        // bLength
+	0x05,        // bDescriptorType (Endpoint)
+	0x01,        // bEndpointAddress (OUT/H2D)
+	0x03,        // bmAttributes (Interrupt)
+	0x20, 0x00,  // wMaxPacketSize 32
+	0x08,        // bInterval 8 (unit depends on device speed)
 };
 
 #endif
