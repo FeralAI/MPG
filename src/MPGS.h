@@ -33,7 +33,7 @@ class MPGS : public MPG
 		 *
 		 * @return GamepadHotkey - The selected hotkey action
 		 */
-		virtual GamepadHotkey hotkey();
+		GamepadHotkey hotkey() override;
 
 	protected:
 		GamepadStorage *mpgStorage;

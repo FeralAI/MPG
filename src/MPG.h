@@ -89,12 +89,12 @@ class MPG
 		/**
 		 * @brief Perform pin setup and any other initialization the board requires
 		 */
-		virtual void setup();
+		void setup();
 
 		/**
 		 * @brief Retrieve the inputs and save to the current state
 		 */
-		virtual void read();
+		void read();
 
 		/**
 		 * @brief Checks and executes any hotkey being pressed.
