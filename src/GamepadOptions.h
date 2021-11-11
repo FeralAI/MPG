@@ -13,6 +13,7 @@ struct GamepadOptions
 	InputMode inputMode;
 	DpadMode dpadMode;
 	SOCDMode socdMode;
+	bool isSet;
 };
 
 #endif
