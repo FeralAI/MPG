@@ -3,14 +3,14 @@
  * SPDX-FileCopyrightText: Copyright (c) 2021 Jason Skuby (mytechtoybox.com)
  */
 
-#ifndef GAMEPAD_DEBOUNCER_H_
-#define GAMEPAD_DEBOUNCER_H_
+#pragma once
 
 #include <string.h>
 #include <stdint.h>
 #include "GamepadState.h"
 
 // Implement this wrapper function for your platform
+// TODO: Make this a pure virtual member instead.
 uint32_t getMillis();
 
 class GamepadDebouncer
@@ -25,5 +25,3 @@ class GamepadDebouncer
 		uint32_t dpadTime[4];
 		uint32_t buttonTime[GAMEPAD_BUTTON_COUNT];
 };
-
-#endif

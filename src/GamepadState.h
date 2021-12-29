@@ -3,8 +3,7 @@
  * SPDX-FileCopyrightText: Copyright (c) 2021 Jason Skuby (mytechtoybox.com)
  */
 
-#ifndef GAMEPAD_STATE_H_
-#define GAMEPAD_STATE_H_
+#pragma once
 
 #include <stdint.h>
 #include "GamepadEnums.h"
@@ -34,32 +33,32 @@
 	+--------+--------+---------+----------+----------+--------+
 */
 
-#define GAMEPAD_MASK_UP    (1 << 0)
-#define GAMEPAD_MASK_DOWN  (1 << 1)
-#define GAMEPAD_MASK_LEFT  (1 << 2)
-#define GAMEPAD_MASK_RIGHT (1 << 3)
+#define GAMEPAD_MASK_UP    (1U << 0)
+#define GAMEPAD_MASK_DOWN  (1U << 1)
+#define GAMEPAD_MASK_LEFT  (1U << 2)
+#define GAMEPAD_MASK_RIGHT (1U << 3)
 
-#define GAMEPAD_MASK_B1    (1 << 0)
-#define GAMEPAD_MASK_B2    (1 << 1)
-#define GAMEPAD_MASK_B3    (1 << 2)
-#define GAMEPAD_MASK_B4    (1 << 3)
-#define GAMEPAD_MASK_L1    (1 << 4)
-#define GAMEPAD_MASK_R1    (1 << 5)
-#define GAMEPAD_MASK_L2    (1 << 6)
-#define GAMEPAD_MASK_R2    (1 << 7)
-#define GAMEPAD_MASK_S1    (1 << 8)
-#define GAMEPAD_MASK_S2    (1 << 9)
-#define GAMEPAD_MASK_L3    (1 << 10)
-#define GAMEPAD_MASK_R3    (1 << 11)
-#define GAMEPAD_MASK_A1    (1 << 12)
-#define GAMEPAD_MASK_A2    (1 << 13)
+#define GAMEPAD_MASK_B1    (1U << 0)
+#define GAMEPAD_MASK_B2    (1U << 1)
+#define GAMEPAD_MASK_B3    (1U << 2)
+#define GAMEPAD_MASK_B4    (1U << 3)
+#define GAMEPAD_MASK_L1    (1U << 4)
+#define GAMEPAD_MASK_R1    (1U << 5)
+#define GAMEPAD_MASK_L2    (1U << 6)
+#define GAMEPAD_MASK_R2    (1U << 7)
+#define GAMEPAD_MASK_S1    (1U << 8)
+#define GAMEPAD_MASK_S2    (1U << 9)
+#define GAMEPAD_MASK_L3    (1U << 10)
+#define GAMEPAD_MASK_R3    (1U << 11)
+#define GAMEPAD_MASK_A1    (1U << 12)
+#define GAMEPAD_MASK_A2    (1U << 13)
 
 // For detecting dpad as buttons
 
-#define GAMEPAD_MASK_DU    (1 << 16)
-#define GAMEPAD_MASK_DD    (1 << 17)
-#define GAMEPAD_MASK_DL    (1 << 18)
-#define GAMEPAD_MASK_DR    (1 << 19)
+#define GAMEPAD_MASK_DU    (1U << 16)
+#define GAMEPAD_MASK_DD    (1U << 17)
+#define GAMEPAD_MASK_DL    (1U << 18)
+#define GAMEPAD_MASK_DR    (1U << 19)
 
 #define GAMEPAD_MASK_DPAD (GAMEPAD_MASK_UP | GAMEPAD_MASK_DOWN | GAMEPAD_MASK_LEFT | GAMEPAD_MASK_RIGHT)
 
@@ -95,15 +94,15 @@ const uint16_t buttonMasks[] =
 
 struct GamepadState
 {
-	uint8_t dpad;
-	uint16_t buttons;
-	uint16_t aux;
-	uint16_t lx;
-	uint16_t ly;
-	uint16_t rx;
-	uint16_t ry;
-	uint8_t lt;
-	uint8_t rt;
+	uint8_t dpad {0};
+	uint16_t buttons {0};
+	uint16_t aux {0};
+	uint16_t lx {GAMEPAD_JOYSTICK_MID};
+	uint16_t ly {GAMEPAD_JOYSTICK_MID};
+	uint16_t rx {GAMEPAD_JOYSTICK_MID};
+	uint16_t ry {GAMEPAD_JOYSTICK_MID};
+	uint8_t lt {0};
+	uint8_t rt {0};
 };
 
 // Convert the horizontal GamepadState dpad axis value into an analog value
@@ -111,12 +110,14 @@ inline uint16_t dpadToAnalogX(uint8_t dpad)
 {
 	switch (dpad & (GAMEPAD_MASK_LEFT | GAMEPAD_MASK_RIGHT))
 	{
-	case GAMEPAD_MASK_LEFT:
-		return GAMEPAD_JOYSTICK_MIN;
-	case GAMEPAD_MASK_RIGHT:
-		return GAMEPAD_JOYSTICK_MAX;
-	default:
-		return GAMEPAD_JOYSTICK_MID;
+		case GAMEPAD_MASK_LEFT:
+			return GAMEPAD_JOYSTICK_MIN;
+
+		case GAMEPAD_MASK_RIGHT:
+			return GAMEPAD_JOYSTICK_MAX;
+
+		default:
+			return GAMEPAD_JOYSTICK_MID;
 	}
 }
 
@@ -125,12 +126,14 @@ inline uint16_t dpadToAnalogY(uint8_t dpad)
 {
 	switch (dpad & (GAMEPAD_MASK_UP | GAMEPAD_MASK_DOWN))
 	{
-	case GAMEPAD_MASK_UP:
-		return GAMEPAD_JOYSTICK_MIN;
-	case GAMEPAD_MASK_DOWN:
-		return GAMEPAD_JOYSTICK_MAX;
-	default:
-		return GAMEPAD_JOYSTICK_MID;
+		case GAMEPAD_MASK_UP:
+			return GAMEPAD_JOYSTICK_MIN;
+
+		case GAMEPAD_MASK_DOWN:
+			return GAMEPAD_JOYSTICK_MAX;
+
+		default:
+			return GAMEPAD_JOYSTICK_MID;
 	}
 }
 
@@ -160,14 +163,17 @@ inline uint8_t runSOCDCleaner(SOCDMode mode, uint8_t dpad)
 			else
 				lastUD = DIRECTION_NONE;
 			break;
+
 		case GAMEPAD_MASK_UP:
 			newDpad |= GAMEPAD_MASK_UP;
 			lastUD = DIRECTION_UP;
 			break;
+
 		case GAMEPAD_MASK_DOWN:
 			newDpad |= GAMEPAD_MASK_DOWN;
 			lastUD = DIRECTION_DOWN;
 			break;
+
 		default:
 			lastUD = DIRECTION_NONE;
 			break;
@@ -181,14 +187,17 @@ inline uint8_t runSOCDCleaner(SOCDMode mode, uint8_t dpad)
 			else
 				lastLR = DIRECTION_NONE;
 			break;
+
 		case GAMEPAD_MASK_LEFT:
 			newDpad |= GAMEPAD_MASK_LEFT;
 			lastLR = DIRECTION_LEFT;
 			break;
+
 		case GAMEPAD_MASK_RIGHT:
 			newDpad |= GAMEPAD_MASK_RIGHT;
 			lastLR = DIRECTION_RIGHT;
 			break;
+
 		default:
 			lastLR = DIRECTION_NONE;
 			break;
@@ -196,5 +205,3 @@ inline uint8_t runSOCDCleaner(SOCDMode mode, uint8_t dpad)
 
 	return newDpad;
 }
-
-#endif

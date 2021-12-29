@@ -3,17 +3,14 @@
  * SPDX-FileCopyrightText: Copyright (c) 2021 Jason Skuby (mytechtoybox.com)
  */
 
-#ifndef GAMEPAD_OPTIONS_H_
-#define GAMEPAD_OPTIONS_H_
+#pragma once
 
 #include "GamepadEnums.h"
 
 struct GamepadOptions
 {
-	InputMode inputMode;
-	DpadMode dpadMode;
-	SOCDMode socdMode;
-	bool isSet;
+	InputMode inputMode {InputMode::INPUT_MODE_XINPUT}; 
+	DpadMode dpadMode {DpadMode::DPAD_MODE_DIGITAL};
+	SOCDMode socdMode {SOCDMode::SOCD_MODE_NEUTRAL};
+	bool isSet {false};
 };
-
-#endif

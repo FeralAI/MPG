@@ -3,8 +3,7 @@
  * SPDX-FileCopyrightText: Copyright (c) 2021 Jason Skuby (mytechtoybox.com)
  */
 
-#ifndef GAMEPAD_CONFIG_H_
-#define GAMEPAD_CONFIG_H_
+#pragma once
 
 #ifndef DEFAULT_SOCD_MODE
 #define DEFAULT_SOCD_MODE SOCD_MODE_NEUTRAL
@@ -16,6 +15,4 @@
 
 #ifndef DEFAULT_INPUT_MODE
 #define DEFAULT_INPUT_MODE INPUT_MODE_XINPUT
-#endif
-
 #endif

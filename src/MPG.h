@@ -3,8 +3,7 @@
  * SPDX-FileCopyrightText: Copyright (c) 2021 Jason Skuby (mytechtoybox.com)
  */
 
-#ifndef MPG_H_
-#define MPG_H_
+#pragma once
 
 #include <stdio.h>
 #include <stdint.h>
@@ -27,7 +26,6 @@ class MPG
 			, f2Mask((GAMEPAD_MASK_L3 | GAMEPAD_MASK_R3))
 			, debouncer(debounceMS)
 		{
-
 		}
 
 		/**
@@ -48,53 +46,37 @@ class MPG
 		/**
 		 * @brief The current D-pad mode.
 		 */
-		GamepadOptions options =
-		{
-			.inputMode = InputMode::INPUT_MODE_XINPUT,
-			.dpadMode = DpadMode::DPAD_MODE_DIGITAL,
-			.socdMode = SOCDMode::SOCD_MODE_NEUTRAL,
-		};
+		GamepadOptions options;
 
 		/**
 		 * @brief The current gamepad state object.
 		 */
-		GamepadState state =
-		{
-			.dpad = 0,
-			.buttons = 0,
-			.aux = 0,
-			.lx = GAMEPAD_JOYSTICK_MID,
-			.ly = GAMEPAD_JOYSTICK_MID,
-			.rx = GAMEPAD_JOYSTICK_MID,
-			.ry = GAMEPAD_JOYSTICK_MID,
-			.lt = 0,
-			.rt = 0,
-		};
+		GamepadState state;
 
 		/**
 		 * @brief Flag to indicate analog trigger support.
 		 */
-		bool hasAnalogTriggers = false;
+		bool hasAnalogTriggers {false};
 
 		/**
 		 * @brief Flag to indicate Left analog stick support.
 		 */
-		bool hasLeftAnalogStick = false;
+		bool hasLeftAnalogStick {false};
 
 		/**
 		 * @brief Flag to indicate Right analog stick support.
 		 */
-		bool hasRightAnalogStick = false;
+		bool hasRightAnalogStick {false};
 
 		/**
-		 * @brief Perform pin setup and any other initialization the board requires
+		 * @brief Perform pin setup and any other initialization the board requires. Derived classes must overide this member.
 		 */
-		void setup();
+		virtual void setup() = 0;
 
 		/**
-		 * @brief Retrieve the inputs and save to the current state
+		 * @brief Retrieve the inputs and save to the current state. Derived classes must overide this member.
 		 */
-		void read();
+		virtual void read() = 0;
 
 		/**
 		 * @brief Checks and executes any hotkey being pressed.
@@ -111,7 +93,7 @@ class MPG
 		/**
 		 * @brief Process the inputs before sending state to host
 		 */
-		void process();
+		virtual void process();
 
 		/**
 		 * @brief Generate USB report for the current input mode.
@@ -185,5 +167,3 @@ class MPG
 		 */
 		GamepadDebouncer debouncer;
 };
-
-#endif

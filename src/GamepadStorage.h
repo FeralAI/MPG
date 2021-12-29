@@ -3,8 +3,7 @@
  * SPDX-FileCopyrightText: Copyright (c) 2021 Jason Skuby (mytechtoybox.com)
  */
 
-#ifndef GAMEPAD_STORAGE_H_
-#define GAMEPAD_STORAGE_H_
+#pragma once
 
 #include <stdint.h>
 
@@ -15,13 +14,11 @@
 class GamepadStorage
 {
 	public:
-		virtual void start();
-		virtual void save();
+		virtual void start(); // TODO: Should be pure virtual.
+		virtual void save(); // TODO: Should be pure virtual.
 
 		GamepadOptions getGamepadOptions();
 		void setGamepadOptions(GamepadOptions options);
 };
 
 static GamepadStorage GamepadStore;
-
-#endif

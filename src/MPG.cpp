@@ -9,6 +9,7 @@ static HIDReport hidReport;
 static SwitchReport switchReport;
 static XInputReport xinputReport;
 
+
 void *MPG::getReport()
 {
 	switch (options.inputMode)
@@ -27,6 +28,7 @@ void *MPG::getReport()
 	}
 }
 
+
 uint16_t MPG::getReportSize()
 {
 	switch (options.inputMode)
@@ -42,9 +44,10 @@ uint16_t MPG::getReportSize()
 	}
 }
 
+
 HIDReport MPG::getHIDReport()
 {
-	HIDReport report =
+	HIDReport report
 	{
 		.buttons = 0,
 		.hat = HID_HAT_NOTHING,
@@ -87,9 +90,10 @@ HIDReport MPG::getHIDReport()
 	return report;
 }
 
+
 SwitchReport MPG::getSwitchReport()
 {
-	SwitchReport report =
+	SwitchReport report
 	{
 		.buttons = 0,
 		.hat = SWITCH_HAT_NOTHING,
@@ -133,9 +137,17 @@ SwitchReport MPG::getSwitchReport()
 	return report;
 }
 
+
 XInputReport MPG::getXInputReport()
 {
-	XInputReport report =
+	// NOTE: Had trouble coercing the compiler into accepting the conversion without declaring new variables
+	// to hold the values.
+	const int16_t lx = static_cast<int16_t>(state.lx) + INT16_MIN;
+	const int16_t ly = static_cast<int16_t>(~state.ly) + INT16_MIN;
+	const int16_t rx = static_cast<int16_t>(state.rx) + INT16_MIN;
+	const int16_t ry = static_cast<int16_t>(~state.ry) + INT16_MIN;
+
+	XInputReport report
 	{
 		.report_id = 0,
 		.report_size = XINPUT_ENDPOINT_SIZE,
@@ -143,10 +155,10 @@ XInputReport MPG::getXInputReport()
 		.buttons2 = 0,
 		.lt = state.lt,
 		.rt = state.rt,
-		.lx = state.lx + -32768,
-		.ly = ~(state.ly) + -32768,
-		.rx = state.rx + -32768,
-		.ry = ~(state.ry) + -32768,
+		.lx = lx,
+		.ly = ly,
+		.rx = rx,
+		.ry = ry,
 		._reserved = { },
 	};
 
@@ -184,6 +196,7 @@ XInputReport MPG::getXInputReport()
 
 	return report;
 }
+
 
 GamepadHotkey MPG::hotkey()
 {
@@ -251,6 +264,7 @@ GamepadHotkey MPG::hotkey()
 	return action;
 }
 
+
 void MPG::process()
 {
 	state.dpad = runSOCDCleaner(options.socdMode, state.dpad);
@@ -288,5 +302,4 @@ void MPG::process()
 			}
 			break;
 	}
-
 }

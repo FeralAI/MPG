@@ -3,8 +3,7 @@
  * SPDX-FileCopyrightText: Copyright (c) 2021 Jason Skuby (mytechtoybox.com)
  */
 
-#ifndef HID_DESCRIPTORS_H_
-#define HID_DESCRIPTORS_H_
+#pragma once
 
 #include <stdint.h>
 
@@ -42,7 +41,7 @@
 #define HID_JOYSTICK_MID 0x80
 #define HID_JOYSTICK_MAX 0xFF
 
-typedef struct __attribute((packed, aligned(1)))
+struct __attribute((packed, aligned(1))) HIDReport
 {
 	uint16_t buttons;
 	uint8_t hat;
@@ -50,7 +49,7 @@ typedef struct __attribute((packed, aligned(1)))
 	uint8_t ly;
 	uint8_t rx;
 	uint8_t ry;
-} HIDReport;
+};
 
 static const uint8_t hid_string_language[]     = { 0x09, 0x04 };
 static const uint8_t hid_string_manufacturer[] = "Generic";
@@ -128,7 +127,7 @@ static const uint8_t hid_configuration_descriptor[] =
 	0x81,        // bEndpointAddress (IN/D2H)
 	0x03,        // bmAttributes (Interrupt)
 	0x40, 0x00,  // wMaxPacketSize 64
-	0x01,        // bInterval 1 (unit depends on device speed)
+	0x01,        // bInterval 1 (unit depends on device speed) - NOTE: This is 125us on fast USB, which means it polls 8 times faster than the code responds.
 };
 
 static const uint8_t hid_report_descriptor[] =
@@ -174,5 +173,3 @@ static const uint8_t hid_report_descriptor[] =
 	0xB1, 0x02,        //   Feature (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
 	0xC0,              // End Collection
 };
-
-#endif

@@ -3,14 +3,14 @@
  * SPDX-FileCopyrightText: Copyright (c) 2021 Jason Skuby (mytechtoybox.com)
  */
 
-#ifndef XINPUT_DESCRIPTORS_H_
-#define XINPUT_DESCRIPTORS_H_
+#pragma once
 
 #include <stdint.h>
 
 #define XINPUT_ENDPOINT_SIZE 20
 
 // Buttons 1 (8 bits)
+// TODO: Consider using an enum class here.
 #define XBOX_MASK_UP    (1U << 0)
 #define XBOX_MASK_DOWN  (1U << 1)
 #define XBOX_MASK_LEFT  (1U << 2)
@@ -21,6 +21,7 @@
 #define XBOX_MASK_RS    (1U << 7)
 
 // Buttons 2 (8 bits)
+// TODO: Consider using an enum class here.
 #define XBOX_MASK_LB    (1U << 0)
 #define XBOX_MASK_RB    (1U << 1)
 #define XBOX_MASK_HOME  (1U << 2)
@@ -30,7 +31,7 @@
 #define XBOX_MASK_X     (1U << 6)
 #define XBOX_MASK_Y     (1U << 7)
 
-typedef struct __attribute((packed, aligned(1)))
+struct __attribute((packed, aligned(1))) XInputReport
 {
 	uint8_t report_id;
 	uint8_t report_size;
@@ -43,7 +44,7 @@ typedef struct __attribute((packed, aligned(1)))
 	int16_t rx;
 	int16_t ry;
 	uint8_t _reserved[6];
-} XInputReport;
+};
 
 static const uint8_t xinput_string_language[]    = { 0x09, 0x04 };
 static const uint8_t xinput_string_manfacturer[] = "Microsoft";
@@ -124,5 +125,3 @@ static const uint8_t xinput_configuration_descriptor[] =
 	0x20, 0x00,  // wMaxPacketSize 32
 	0x08,        // bInterval 8 (unit depends on device speed)
 };
-
-#endif
