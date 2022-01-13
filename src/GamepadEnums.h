@@ -53,6 +53,8 @@ typedef enum
 	HOTKEY_SOCD_UP_PRIORITY  = 0x20,
 	HOTKEY_SOCD_NEUTRAL      = 0x40,
 	HOTKEY_SOCD_LAST_INPUT   = 0x80,
+	HOTKEY_INVERT_X_AXIS     = 0x100,
+	HOTKEY_INVERT_Y_AXIS     = 0x200,
 } GamepadHotkey;
 
 #endif

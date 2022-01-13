@@ -9,12 +9,14 @@
 #include <stdint.h>
 #include "GamepadEnums.h"
 
-struct GamepadOptions
+struct __attribute((__packed__)) GamepadOptions
 {
 	InputMode inputMode;
 	DpadMode dpadMode;
 	SOCDMode socdMode;
 	uint32_t checksum;
+	bool invertXAxis;
+	bool invertYAxis;
 };
 
 #endif
