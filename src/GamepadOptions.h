@@ -6,6 +6,7 @@
 #ifndef GAMEPAD_OPTIONS_H_
 #define GAMEPAD_OPTIONS_H_
 
+#include <stdint.h>
 #include "GamepadEnums.h"
 
 struct GamepadOptions
@@ -13,7 +14,7 @@ struct GamepadOptions
 	InputMode inputMode;
 	DpadMode dpadMode;
 	SOCDMode socdMode;
-	bool isSet;
+	uint32_t checksum;
 };
 
 #endif
