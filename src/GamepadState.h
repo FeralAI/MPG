@@ -56,10 +56,10 @@
 
 // For detecting dpad as buttons
 
-#define GAMEPAD_MASK_DU    (1 << 16)
-#define GAMEPAD_MASK_DD    (1 << 17)
-#define GAMEPAD_MASK_DL    (1 << 18)
-#define GAMEPAD_MASK_DR    (1 << 19)
+#define GAMEPAD_MASK_DU    (1UL << 16)
+#define GAMEPAD_MASK_DD    (1UL << 17)
+#define GAMEPAD_MASK_DL    (1UL << 18)
+#define GAMEPAD_MASK_DR    (1UL << 19)
 
 #define GAMEPAD_MASK_DPAD (GAMEPAD_MASK_UP | GAMEPAD_MASK_DOWN | GAMEPAD_MASK_LEFT | GAMEPAD_MASK_RIGHT)
 
