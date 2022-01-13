@@ -245,6 +245,13 @@ GamepadHotkey MPG::hotkey()
 				state.dpad = 0;
 				state.buttons &= ~(f2Mask);
 				break;
+
+			case GAMEPAD_MASK_RIGHT:
+				action = HOTKEY_INVERT_Y_AXIS;
+				options.invertYAxis = !options.invertYAxis;
+				state.dpad = 0;
+				state.buttons &= ~(f2Mask);
+				break;
 		}
 	}
 

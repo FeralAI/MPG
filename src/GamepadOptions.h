@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include "GamepadEnums.h"
 
-struct __attribute((__packed__)) GamepadOptions
+struct GamepadOptions
 {
 	InputMode inputMode;
 	DpadMode dpadMode;
