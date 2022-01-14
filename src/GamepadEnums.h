@@ -58,5 +58,3 @@ enum GamepadHotkey
 	HOTKEY_INVERT_X_AXIS     = (1U << 8),
 	HOTKEY_INVERT_Y_AXIS     = (1U << 9),
 };
-
-#endif
