@@ -3,8 +3,7 @@
  * SPDX-FileCopyrightText: Copyright (c) 2021 Jason Skuby (mytechtoybox.com)
  */
 
-#ifndef SWITCH_DESCRIPTORS_H_
-#define SWITCH_DESCRIPTORS_H_
+#pragma once
 
 #include <stdint.h>
 
@@ -42,7 +41,7 @@
 #define SWITCH_JOYSTICK_MID 0x80
 #define SWITCH_JOYSTICK_MAX 0xFF
 
-typedef struct __attribute((packed, aligned(1)))
+struct __attribute((packed, aligned(1))) SwitchReport
 {
 	uint16_t buttons;
 	uint8_t hat;
@@ -51,9 +50,9 @@ typedef struct __attribute((packed, aligned(1)))
 	uint8_t rx;
 	uint8_t ry;
 	uint8_t vendor;
-} SwitchReport;
+};
 
-typedef struct
+struct SwitchOutReport
 {
 	uint16_t buttons;
 	uint8_t hat;
@@ -61,7 +60,7 @@ typedef struct
 	uint8_t ly;
 	uint8_t rx;
 	uint8_t ry;
-} SwitchOutReport;
+};
 
 static const uint8_t switch_string_language[]     = { 0x09, 0x04 };
 static const uint8_t switch_string_manufacturer[] = "HORI CO.,LTD.";
@@ -193,5 +192,3 @@ static const uint8_t switch_report_descriptor[] =
 	0x91, 0x02,        //   Output (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
 	0xC0,              // End Collection
 };
-
-#endif

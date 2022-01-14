@@ -3,8 +3,7 @@
  * SPDX-FileCopyrightText: Copyright (c) 2021 Jason Skuby (mytechtoybox.com)
  */
 
-#ifndef GAMEPAD_DESCRIPTORS_H_
-#define GAMEPAD_DESCRIPTORS_H_
+#pragma once
 
 #include <string.h>
 #include "GamepadEnums.h"
@@ -138,5 +137,3 @@ static const uint16_t *getStringDescriptor(uint16_t *size, InputMode mode, uint8
 
 	return convertStringDescriptor(size, str, charCount);
 }
-
-#endif
