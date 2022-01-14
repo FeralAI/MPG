@@ -35,11 +35,13 @@ void setup()
 	mpg.read();
 
 	if (mpg.pressedR3())
-		mpg.inputMode = INPUT_MODE_HID;
+		mpg.options.inputMode = INPUT_MODE_HID;
 	else if (mpg.pressedS1())
-		mpg.inputMode = INPUT_MODE_SWITCH;
+		mpg.options.inputMode = INPUT_MODE_SWITCH;
 	else if (mpg.pressedS2())
-		mpg.inputMode = INPUT_MODE_XINPUT;
+		mpg.options.inputMode = INPUT_MODE_XINPUT;
+
+  Serial.println("read,debounce,hotkeys,process,report,total");
 }
 
 void loop()
@@ -56,43 +58,42 @@ void loop()
 	startTime = micros();
 	mpg.read();
 	endTime = micros() - startTime;
-	Serial.print("R: ");
 	Serial.print(endTime);
+	Serial.print(",");
 	totalTime += endTime;
 
 	// Run debouncing if enabled
 	startTime = micros();
 	mpg.debounce();
 	endTime = micros() - startTime;
-	Serial.print(", D: ");
 	Serial.print(endTime);
+	Serial.print(",");
 	totalTime += endTime;
 
 	// Check hotkey presses (D-pad mode, SOCD mode, etc.), hotkey enum returned
 	startTime = micros();
 	hotkey = mpg.hotkey();
 	endTime = micros() - startTime;
-	Serial.print(", H: ");
 	Serial.print(endTime);
+	Serial.print(",");
 	totalTime += endTime;
 
 	// Perform final input processing (SOCD cleaning, LS/RS emulation, etc.)
 	startTime = micros();
 	mpg.process();
 	endTime = micros() - startTime;
-	Serial.print(", P: ");
 	Serial.print(endTime);
+	Serial.print(",");
 	totalTime += endTime;
 
 	// Convert to USB report
 	startTime = micros();
 	mpg.getReport();
 	endTime = micros() - startTime;
-	Serial.print(", U: ");
 	Serial.print(endTime);
+	Serial.print(",");
 	totalTime += endTime;
 
 	// Total method time
-	Serial.print(", T: ");
 	Serial.println(totalTime);
 }

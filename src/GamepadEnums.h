@@ -55,4 +55,8 @@ enum GamepadHotkey
 	HOTKEY_SOCD_UP_PRIORITY  = (1U << 5),
 	HOTKEY_SOCD_NEUTRAL      = (1U << 6),
 	HOTKEY_SOCD_LAST_INPUT   = (1U << 7),
+	HOTKEY_INVERT_X_AXIS     = (1U << 8),
+	HOTKEY_INVERT_Y_AXIS     = (1U << 9),
 };
+
+#endif

@@ -200,6 +200,8 @@ XInputReport MPG::getXInputReport()
 
 GamepadHotkey MPG::hotkey()
 {
+	static GamepadHotkey lastAction = HOTKEY_NONE;
+
 	GamepadHotkey action = HOTKEY_NONE;
 	if (pressedF1())
 	{
@@ -258,9 +260,18 @@ GamepadHotkey MPG::hotkey()
 				state.dpad = 0;
 				state.buttons &= ~(f2Mask);
 				break;
+
+			case GAMEPAD_MASK_RIGHT:
+				if (lastAction != HOTKEY_INVERT_Y_AXIS)
+					options.invertYAxis = !options.invertYAxis;
+				action = HOTKEY_INVERT_Y_AXIS;
+				state.dpad = 0;
+				state.buttons &= ~(f2Mask);
+				break;
 		}
 	}
 
+	lastAction = action;
 	return action;
 }
 
