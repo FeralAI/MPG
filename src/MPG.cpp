@@ -46,16 +46,13 @@ void *MPG::getReport()
 	switch (options.inputMode)
 	{
 		case INPUT_MODE_XINPUT:
-			getXInputReport();
-			return &xinputReport;
+			return getXInputReport();
 
 		case INPUT_MODE_SWITCH:
-			getSwitchReport();
-			return &switchReport;
+			return getSwitchReport();
 
 		default:
-			getHIDReport();
-			return &hidReport;
+			return getHIDReport();
 	}
 }
 

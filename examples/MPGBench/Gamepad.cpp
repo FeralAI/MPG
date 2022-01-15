@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <MPG.h>
+#include "Gamepad.h"
 
 // Define debounce time prior to including Gamepad.h, 0 to disable
 #ifndef DEBOUNCE_MILLIS
@@ -37,7 +37,7 @@
 /**
  * Perform pin setup and any other initialization the board requires
  */
-void MPG::setup()
+void Gamepad::setup()
 {
 	// Set to input (invert mask to set to 0)
 	DDRB = DDRB & ~PORTB_INPUT_MASK;
@@ -50,7 +50,7 @@ void MPG::setup()
 	PORTF = PORTF | PORTF_INPUT_MASK;
 }
 
-void MPG::read()
+void Gamepad::read()
 {
 	// Cache port states
 	static uint8_t ports[3];
