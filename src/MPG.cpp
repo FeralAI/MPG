@@ -5,25 +5,56 @@
 
 #include "MPG.h"
 
-static HIDReport hidReport;
-static SwitchReport switchReport;
-static XInputReport xinputReport;
+static HIDReport hidReport
+{
+	.buttons = 0,
+	.hat = HID_HAT_NOTHING,
+	.lx = HID_JOYSTICK_MID,
+	.ly = HID_JOYSTICK_MID,
+	.rx = HID_JOYSTICK_MID,
+	.ry = HID_JOYSTICK_MID,
+};
 
+static SwitchReport switchReport
+{
+	.buttons = 0,
+	.hat = SWITCH_HAT_NOTHING,
+	.lx = SWITCH_JOYSTICK_MID,
+	.ly = SWITCH_JOYSTICK_MID,
+	.rx = SWITCH_JOYSTICK_MID,
+	.ry = SWITCH_JOYSTICK_MID,
+	.vendor = 0,
+};
+
+static XInputReport xinputReport
+{
+	.report_id = 0,
+	.report_size = XINPUT_ENDPOINT_SIZE,
+	.buttons1 = 0,
+	.buttons2 = 0,
+	.lt = 0,
+	.rt = 0,
+	.lx = GAMEPAD_JOYSTICK_MID,
+	.ly = GAMEPAD_JOYSTICK_MID,
+	.rx = GAMEPAD_JOYSTICK_MID,
+	.ry = GAMEPAD_JOYSTICK_MID,
+	._reserved = { },
+};
 
 void *MPG::getReport()
 {
 	switch (options.inputMode)
 	{
 		case INPUT_MODE_XINPUT:
-			xinputReport = getXInputReport();
+			getXInputReport();
 			return &xinputReport;
 
 		case INPUT_MODE_SWITCH:
-			switchReport = getSwitchReport();
+			getSwitchReport();
 			return &switchReport;
 
 		default:
-			hidReport = getHIDReport();
+			getHIDReport();
 			return &hidReport;
 	}
 }
@@ -45,32 +76,22 @@ uint16_t MPG::getReportSize()
 }
 
 
-HIDReport MPG::getHIDReport()
+HIDReport *MPG::getHIDReport()
 {
-	HIDReport report
-	{
-		.buttons = 0,
-		.hat = HID_HAT_NOTHING,
-		.lx = (uint8_t)(state.lx >> 8),
-		.ly = (uint8_t)(state.ly >> 8),
-		.rx = (uint8_t)(state.rx >> 8),
-		.ry = (uint8_t)(state.ry >> 8),
-	};
-
 	switch (state.dpad & GAMEPAD_MASK_DPAD)
 	{
-		case GAMEPAD_MASK_UP:                        report.hat = HID_HAT_UP;        break;
-		case GAMEPAD_MASK_UP | GAMEPAD_MASK_RIGHT:   report.hat = HID_HAT_UPRIGHT;   break;
-		case GAMEPAD_MASK_RIGHT:                     report.hat = HID_HAT_RIGHT;     break;
-		case GAMEPAD_MASK_DOWN | GAMEPAD_MASK_RIGHT: report.hat = HID_HAT_DOWNRIGHT; break;
-		case GAMEPAD_MASK_DOWN:                      report.hat = HID_HAT_DOWN;      break;
-		case GAMEPAD_MASK_DOWN | GAMEPAD_MASK_LEFT:  report.hat = HID_HAT_DOWNLEFT;  break;
-		case GAMEPAD_MASK_LEFT:                      report.hat = HID_HAT_LEFT;      break;
-		case GAMEPAD_MASK_UP | GAMEPAD_MASK_LEFT:    report.hat = HID_HAT_UPLEFT;    break;
-		default:                                     report.hat = HID_HAT_NOTHING;   break;
+		case GAMEPAD_MASK_UP:                        hidReport.hat = HID_HAT_UP;        break;
+		case GAMEPAD_MASK_UP | GAMEPAD_MASK_RIGHT:   hidReport.hat = HID_HAT_UPRIGHT;   break;
+		case GAMEPAD_MASK_RIGHT:                     hidReport.hat = HID_HAT_RIGHT;     break;
+		case GAMEPAD_MASK_DOWN | GAMEPAD_MASK_RIGHT: hidReport.hat = HID_HAT_DOWNRIGHT; break;
+		case GAMEPAD_MASK_DOWN:                      hidReport.hat = HID_HAT_DOWN;      break;
+		case GAMEPAD_MASK_DOWN | GAMEPAD_MASK_LEFT:  hidReport.hat = HID_HAT_DOWNLEFT;  break;
+		case GAMEPAD_MASK_LEFT:                      hidReport.hat = HID_HAT_LEFT;      break;
+		case GAMEPAD_MASK_UP | GAMEPAD_MASK_LEFT:    hidReport.hat = HID_HAT_UPLEFT;    break;
+		default:                                     hidReport.hat = HID_HAT_NOTHING;   break;
 	}
 
-	report.buttons = 0
+	hidReport.buttons = 0
 		| (pressedB1() ? HID_MASK_CROSS    : 0)
 		| (pressedB2() ? HID_MASK_CIRCLE   : 0)
 		| (pressedB3() ? HID_MASK_SQUARE   : 0)
@@ -87,37 +108,31 @@ HIDReport MPG::getHIDReport()
 		| (pressedA2() ? HID_MASK_TP       : 0)
 	;
 
-	return report;
+	hidReport.lx = static_cast<uint8_t>(state.lx >> 8);
+	hidReport.ly = static_cast<uint8_t>(state.ly >> 8);
+	hidReport.rx = static_cast<uint8_t>(state.rx >> 8);
+	hidReport.ry = static_cast<uint8_t>(state.ry >> 8);
+
+	return &hidReport;
 }
 
 
-SwitchReport MPG::getSwitchReport()
+SwitchReport *MPG::getSwitchReport()
 {
-	SwitchReport report
-	{
-		.buttons = 0,
-		.hat = SWITCH_HAT_NOTHING,
-		.lx = (uint8_t)(state.lx >> 8),
-		.ly = (uint8_t)(state.ly >> 8),
-		.rx = (uint8_t)(state.rx >> 8),
-		.ry = (uint8_t)(state.ry >> 8),
-		.vendor = 0,
-	};
-
 	switch (state.dpad & GAMEPAD_MASK_DPAD)
 	{
-		case GAMEPAD_MASK_UP:                        report.hat = SWITCH_HAT_UP;        break;
-		case GAMEPAD_MASK_UP | GAMEPAD_MASK_RIGHT:   report.hat = SWITCH_HAT_UPRIGHT;   break;
-		case GAMEPAD_MASK_RIGHT:                     report.hat = SWITCH_HAT_RIGHT;     break;
-		case GAMEPAD_MASK_DOWN | GAMEPAD_MASK_RIGHT: report.hat = SWITCH_HAT_DOWNRIGHT; break;
-		case GAMEPAD_MASK_DOWN:                      report.hat = SWITCH_HAT_DOWN;      break;
-		case GAMEPAD_MASK_DOWN | GAMEPAD_MASK_LEFT:  report.hat = SWITCH_HAT_DOWNLEFT;  break;
-		case GAMEPAD_MASK_LEFT:                      report.hat = SWITCH_HAT_LEFT;      break;
-		case GAMEPAD_MASK_UP | GAMEPAD_MASK_LEFT:    report.hat = SWITCH_HAT_UPLEFT;    break;
-		default:                                     report.hat = SWITCH_HAT_NOTHING;   break;
+		case GAMEPAD_MASK_UP:                        switchReport.hat = SWITCH_HAT_UP;        break;
+		case GAMEPAD_MASK_UP | GAMEPAD_MASK_RIGHT:   switchReport.hat = SWITCH_HAT_UPRIGHT;   break;
+		case GAMEPAD_MASK_RIGHT:                     switchReport.hat = SWITCH_HAT_RIGHT;     break;
+		case GAMEPAD_MASK_DOWN | GAMEPAD_MASK_RIGHT: switchReport.hat = SWITCH_HAT_DOWNRIGHT; break;
+		case GAMEPAD_MASK_DOWN:                      switchReport.hat = SWITCH_HAT_DOWN;      break;
+		case GAMEPAD_MASK_DOWN | GAMEPAD_MASK_LEFT:  switchReport.hat = SWITCH_HAT_DOWNLEFT;  break;
+		case GAMEPAD_MASK_LEFT:                      switchReport.hat = SWITCH_HAT_LEFT;      break;
+		case GAMEPAD_MASK_UP | GAMEPAD_MASK_LEFT:    switchReport.hat = SWITCH_HAT_UPLEFT;    break;
+		default:                                     switchReport.hat = SWITCH_HAT_NOTHING;   break;
 	}
 
-	report.buttons = 0
+	switchReport.buttons = 0
 		| (pressedB1() ? SWITCH_MASK_B       : 0)
 		| (pressedB2() ? SWITCH_MASK_A       : 0)
 		| (pressedB3() ? SWITCH_MASK_Y       : 0)
@@ -134,35 +149,18 @@ SwitchReport MPG::getSwitchReport()
 		| (pressedA2() ? SWITCH_MASK_CAPTURE : 0)
 	;
 
-	return report;
+	switchReport.lx = static_cast<uint8_t>(state.lx >> 8);
+	switchReport.ly = static_cast<uint8_t>(state.ly >> 8);
+	switchReport.rx = static_cast<uint8_t>(state.rx >> 8);
+	switchReport.ry = static_cast<uint8_t>(state.ry >> 8);
+
+	return &switchReport;
 }
 
 
-XInputReport MPG::getXInputReport()
+XInputReport *MPG::getXInputReport()
 {
-	// NOTE: Had trouble coercing the compiler into accepting the conversion without declaring new variables
-	// to hold the values.
-	const int16_t lx = static_cast<int16_t>(state.lx) + INT16_MIN;
-	const int16_t ly = static_cast<int16_t>(~state.ly) + INT16_MIN;
-	const int16_t rx = static_cast<int16_t>(state.rx) + INT16_MIN;
-	const int16_t ry = static_cast<int16_t>(~state.ry) + INT16_MIN;
-
-	XInputReport report
-	{
-		.report_id = 0,
-		.report_size = XINPUT_ENDPOINT_SIZE,
-		.buttons1 = 0,
-		.buttons2 = 0,
-		.lt = state.lt,
-		.rt = state.rt,
-		.lx = lx,
-		.ly = ly,
-		.rx = rx,
-		.ry = ry,
-		._reserved = { },
-	};
-
-	report.buttons1 = 0
+	xinputReport.buttons1 = 0
 		| (pressedUp()    ? XBOX_MASK_UP    : 0)
 		| (pressedDown()  ? XBOX_MASK_DOWN  : 0)
 		| (pressedLeft()  ? XBOX_MASK_LEFT  : 0)
@@ -173,7 +171,7 @@ XInputReport MPG::getXInputReport()
 		| (pressedR3()    ? XBOX_MASK_RS    : 0)
 	;
 
-	report.buttons2 = 0
+	xinputReport.buttons2 = 0
 		| (pressedL1() ? XBOX_MASK_LB   : 0)
 		| (pressedR1() ? XBOX_MASK_RB   : 0)
 		| (pressedA1() ? XBOX_MASK_HOME : 0)
@@ -183,18 +181,23 @@ XInputReport MPG::getXInputReport()
 		| (pressedB4() ? XBOX_MASK_Y    : 0)
 	;
 
+	xinputReport.lx = static_cast<int16_t>(state.lx) + INT16_MIN;
+	xinputReport.ly = static_cast<int16_t>(~state.ly) + INT16_MIN;
+	xinputReport.rx = static_cast<int16_t>(state.rx) + INT16_MIN;
+	xinputReport.ry = static_cast<int16_t>(~state.ry) + INT16_MIN;
+
 	if (hasAnalogTriggers)
 	{
-		report.lt = state.lt;
-		report.rt = state.rt;
+		xinputReport.lt = state.lt;
+		xinputReport.rt = state.rt;
 	}
 	else
 	{
-		report.lt = pressedL2() ? 0xFF : 0;
-		report.rt = pressedR2() ? 0xFF : 0;
+		xinputReport.lt = pressedL2() ? 0xFF : 0;
+		xinputReport.rt = pressedR2() ? 0xFF : 0;
 	}
 
-	return report;
+	return &xinputReport;
 }
 
 
