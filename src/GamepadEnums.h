@@ -9,42 +9,42 @@
 // TODO: Think about making enums "class enum" instead. This will keep them out of the global namespace
 // and provide strong type assurance instead of being treated as ints. Also, modern c++ would tend towards
 // using Pascal-case naming for the individual declarations.
-enum InputMode
+typedef enum
 {
 	INPUT_MODE_XINPUT,
 	INPUT_MODE_SWITCH,
 	INPUT_MODE_HID,
 	INPUT_MODE_CONFIG = 255,
-};
+} InputMode;
 
 // The available stick emulation modes
-enum DpadMode
+typedef enum
 {
 	DPAD_MODE_DIGITAL,
 	DPAD_MODE_LEFT_ANALOG,
 	DPAD_MODE_RIGHT_ANALOG,
-};
+} DpadMode;
 
 // The available SOCD cleaning methods
-enum SOCDMode
+typedef enum
 {
 	SOCD_MODE_UP_PRIORITY,           // U+D=U, L+R=N
 	SOCD_MODE_NEUTRAL,               // U+D=N, L+R=N
 	SOCD_MODE_SECOND_INPUT_PRIORITY, // U>D=D, L>R=R (Last Input Priority, aka Last Win)
-};
+} SOCDMode;
 
 // Enum for tracking last direction state of Second Input SOCD method
-enum DpadDirection
+typedef enum
 {
 	DIRECTION_NONE,
 	DIRECTION_UP,
 	DIRECTION_DOWN,
 	DIRECTION_LEFT,
 	DIRECTION_RIGHT
-};
+} DpadDirection;
 
 // The available hotkey actions
-enum GamepadHotkey
+typedef enum
 {
 	HOTKEY_NONE              = 0x00,
 	HOTKEY_DPAD_DIGITAL      = (1U << 0),
@@ -57,4 +57,4 @@ enum GamepadHotkey
 	HOTKEY_SOCD_LAST_INPUT   = (1U << 7),
 	HOTKEY_INVERT_X_AXIS     = (1U << 8),
 	HOTKEY_INVERT_Y_AXIS     = (1U << 9),
-};
+} GamepadHotkey;

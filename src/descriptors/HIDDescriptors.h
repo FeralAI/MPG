@@ -41,7 +41,7 @@
 #define HID_JOYSTICK_MID 0x80
 #define HID_JOYSTICK_MAX 0xFF
 
-struct __attribute((packed, aligned(1))) HIDReport
+typedef struct __attribute((packed, aligned(1)))
 {
 	uint16_t buttons;
 	uint8_t hat;
@@ -49,7 +49,7 @@ struct __attribute((packed, aligned(1))) HIDReport
 	uint8_t ly;
 	uint8_t rx;
 	uint8_t ry;
-};
+} HIDReport;
 
 static const uint8_t hid_string_language[]     = { 0x09, 0x04 };
 static const uint8_t hid_string_manufacturer[] = "Generic";

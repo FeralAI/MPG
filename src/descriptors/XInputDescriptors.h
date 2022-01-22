@@ -31,7 +31,7 @@
 #define XBOX_MASK_X     (1U << 6)
 #define XBOX_MASK_Y     (1U << 7)
 
-struct __attribute((packed, aligned(1))) XInputReport
+typedef struct __attribute((packed, aligned(1)))
 {
 	uint8_t report_id;
 	uint8_t report_size;
@@ -44,7 +44,7 @@ struct __attribute((packed, aligned(1))) XInputReport
 	int16_t rx;
 	int16_t ry;
 	uint8_t _reserved[6];
-};
+} XInputReport;
 
 static const uint8_t xinput_string_language[]    = { 0x09, 0x04 };
 static const uint8_t xinput_string_manfacturer[] = "Microsoft";

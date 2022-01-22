@@ -13,7 +13,6 @@ void MPGS::load()
 {
 	options = mpgStorage->getGamepadOptions();
 }
-
 void MPGS::save()
 {
 	bool dirty = false;

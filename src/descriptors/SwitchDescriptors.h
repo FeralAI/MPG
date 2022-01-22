@@ -41,7 +41,7 @@
 #define SWITCH_JOYSTICK_MID 0x80
 #define SWITCH_JOYSTICK_MAX 0xFF
 
-struct __attribute((packed, aligned(1))) SwitchReport
+typedef struct __attribute((packed, aligned(1)))
 {
 	uint16_t buttons;
 	uint8_t hat;
@@ -50,9 +50,9 @@ struct __attribute((packed, aligned(1))) SwitchReport
 	uint8_t rx;
 	uint8_t ry;
 	uint8_t vendor;
-};
+} SwitchReport;
 
-struct SwitchOutReport
+typedef struct
 {
 	uint16_t buttons;
 	uint8_t hat;
@@ -60,7 +60,7 @@ struct SwitchOutReport
 	uint8_t ly;
 	uint8_t rx;
 	uint8_t ry;
-};
+} SwitchOutReport;
 
 static const uint8_t switch_string_language[]     = { 0x09, 0x04 };
 static const uint8_t switch_string_manufacturer[] = "HORI CO.,LTD.";
