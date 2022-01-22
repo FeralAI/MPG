@@ -14,7 +14,7 @@
  * ---------------------------------------------
  * Min: R: 16, D: 36, H: 4, P:  8, U: 12, T:  76
  * Typ: R: 16, D: 40, H: 8, P:  8, U: 16, T:  88
- * Max: R: 24, D: 48, H: 8, P: 12, U: 16, T: 108
+ * Max: R: 24, D: 44, H: 8, P: 12, U: 16, T: 104
  *
  */
 
@@ -23,40 +23,42 @@
 #include <GamepadDebouncer.h>
 uint32_t getMillis() { return millis(); }
 
-#include <MPGS.h>
-MPG mpg(DEBOUNCE_MILLIS);
+#include "Gamepad.h"
+Gamepad gamepad(DEBOUNCE_MILLIS);
 
 void setup()
 {
 	Serial.begin(115200);
 	while (!Serial) { }
 
-	mpg.setup();
-	mpg.read();
+	gamepad.setup();
+	gamepad.read();
 
-	if (mpg.pressedR3())
-		mpg.options.inputMode = INPUT_MODE_HID;
-	else if (mpg.pressedS1())
-		mpg.options.inputMode = INPUT_MODE_SWITCH;
-	else if (mpg.pressedS2())
-		mpg.options.inputMode = INPUT_MODE_XINPUT;
+	if (gamepad.pressedR3())
+		gamepad.options.inputMode = INPUT_MODE_HID;
+	else if (gamepad.pressedS1())
+		gamepad.options.inputMode = INPUT_MODE_SWITCH;
+	else if (gamepad.pressedS2())
+		gamepad.options.inputMode = INPUT_MODE_XINPUT;
 
-  Serial.println("read,debounce,hotkeys,process,report,total");
+  Serial.println("read,debounce,hotkeys,process,report,total,mintotal,maxtotal");
 }
 
 void loop()
 {
-	static const uint8_t reportSize = mpg.getReportSize();
+	static const uint8_t reportSize = gamepad.getReportSize();
 	static GamepadHotkey hotkey;
 
 	static uint32_t startTime = 0;
 	static uint32_t endTime = 0;
+	static uint32_t minTime = UINT32_MAX;
+	static uint32_t maxTime = 0;
 
 	uint32_t totalTime = 0;
 
 	// Read raw inputs
 	startTime = micros();
-	mpg.read();
+	gamepad.read();
 	endTime = micros() - startTime;
 	Serial.print(endTime);
 	Serial.print(",");
@@ -64,7 +66,7 @@ void loop()
 
 	// Run debouncing if enabled
 	startTime = micros();
-	mpg.debounce();
+	gamepad.debounce();
 	endTime = micros() - startTime;
 	Serial.print(endTime);
 	Serial.print(",");
@@ -72,7 +74,7 @@ void loop()
 
 	// Check hotkey presses (D-pad mode, SOCD mode, etc.), hotkey enum returned
 	startTime = micros();
-	hotkey = mpg.hotkey();
+	hotkey = gamepad.hotkey();
 	endTime = micros() - startTime;
 	Serial.print(endTime);
 	Serial.print(",");
@@ -80,7 +82,7 @@ void loop()
 
 	// Perform final input processing (SOCD cleaning, LS/RS emulation, etc.)
 	startTime = micros();
-	mpg.process();
+	gamepad.process();
 	endTime = micros() - startTime;
 	Serial.print(endTime);
 	Serial.print(",");
@@ -88,12 +90,21 @@ void loop()
 
 	// Convert to USB report
 	startTime = micros();
-	mpg.getReport();
+	gamepad.getReport();
 	endTime = micros() - startTime;
 	Serial.print(endTime);
 	Serial.print(",");
 	totalTime += endTime;
 
 	// Total method time
-	Serial.println(totalTime);
+	Serial.print(totalTime);
+	Serial.print(",");
+
+	// Calc min/max times
+	minTime = (totalTime < minTime) ? totalTime : minTime;
+	maxTime = (totalTime > maxTime) ? totalTime : maxTime;
+
+	Serial.print(minTime);
+	Serial.print(",");
+	Serial.println(maxTime);
 }
