@@ -70,7 +70,7 @@ There are no example projects included, but the following projects are example i
 
 ## Usage
 
-There are two gamepad classes available: `MPG` and `MPGS`. The `MPG` class is the base class with all of the input handling and report conversion methods, while `MPGS` extends the base class with some additional methods for persisting gamepad options. The main file of an MPG application will look something like this:
+There are two gamepad classes available: `MPG` and `MPGS`. The `MPG` class is the base class with all of the input handling and report conversion methods, while `MPGS` extends the base class with some additional methods for persisting gamepad options. Just create a derived class from one of these base classes, and use like this:
 
 ```c++
 /*
@@ -79,9 +79,9 @@ There are two gamepad classes available: `MPG` and `MPGS`. The `MPG` class is th
 
 #define GAMEPAD_DEBOUNCE_MILLIS 5
 
-#include <MPGS.h>
+#include "Gamepad.h" // This will pull in our MPG implementation
 
-MPGS mpg(GAMEPAD_DEBOUNCE_MILLIS);
+Gamepad mpg(GAMEPAD_DEBOUNCE_MILLIS);
 
 void setup() {
   mpg.setup(); // Runs your custom setup logic
@@ -130,19 +130,31 @@ MPG provides some declarations and virtual methods that require implementation i
 
 * `MPG::setup()` - Use to configure pins, calibrate analog, etc.
 * `MPG::read()` - Use to fill the `MPG.state` class member, which is then used in other class methods
-* `getMillis()` - Used to get timing for checking debounce state (can be no-op if `debounceMS` set to `0`)
+* `getMillis()` - Global timing function for checking debounce state (can be no-op if `debounceMS` set to `0`)
 
 An optimized Arduino `MPG` class implementation for a Leonardo might look like this:
 
 ```c++
+#include <MPG.h>
+
+class Gamepad : public MPG
+{
+  public:
+    Gamepad(int debounceMS = 5) : MPG(debounceMS) { }
+    void setup() override;
+    void read() override;
+}
+```
+
+```c++
 /*
- * gamepad.cpp
+ * Gamepad.cpp
  *
  * Example uses direct register reads for faster performance.
  * digitalRead() can still work, but not recommended because SLOW.
  */
 
-#include <MPG.h>
+#include "Gamepad.h"
 
 /* Define port/pins for easy readability */
 
@@ -179,7 +191,7 @@ An optimized Arduino `MPG` class implementation for a Leonardo might look like t
 // Define time function for gamepad debouncer
 uint32_t getMillis() { return millis(); }
 
-void MPG::setup() {
+void Gamepad::setup() {
   // Set to input (invert mask to set to 0)
   DDRB = DDRB & ~PORTB_INPUT_MASK;
   DDRD = DDRD & ~PORTD_INPUT_MASK;
@@ -192,7 +204,7 @@ void MPG::setup() {
 }
 
 
-void MPG::read() {
+void Gamepad::read() {
   // Get port states, invert since INPUT_PULLUP
   uint8_t ports[] = { ~PINB, ~PIND, ~PINF };
 
@@ -234,7 +246,7 @@ Most of the code are the pin definitions and fancy formatting of bitwise button 
 
 ### MPGS Class
 
-If your platform supports some form of persistent storage like EEPROM, you can use the `MPGS` class instead. The differences between the `MPG` and `MPGS` classes are:
+If your platform supports some form of persistent storage like EEPROM, you can use the `MPGS` abstract class instead. The differences between the `MPG` and `MPGS` classes are:
 
 * `MPGS` class has two additional methods available for use:
   * `save()`
@@ -315,7 +327,7 @@ The function button mapping can be overridden by setting the `MPG::f1Mask` and/o
 MPG provides a predefined set of hotkeys for managing gamepad options. All options can be changed while running, and are persisted if gamepad storage is implemented.
 
 ```c++
-MPGS gamepad(DEBOUNCE_TIME_MS);
+Gamepad gamepad(DEBOUNCE_TIME_MS);
 
 void setup()
 {
