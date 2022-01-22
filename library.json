@@ -1,6 +1,6 @@
 {
 	"name": "MPG",
-	"version": "0.2.1",
+	"version": "0.3.0",
 	"description": "C++ library for processing and converting gamepad inputs, with support for XInput, DirectInput and Nintendo Switch.",
 	"keywords": ["c++", "baremetal", "gamepad", "hid", "dinput", "directinput", "switch", "xinput"],
 	"authors": [
