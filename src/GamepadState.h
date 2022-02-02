@@ -60,6 +60,13 @@
 #define GAMEPAD_MASK_DL    (1UL << 18)
 #define GAMEPAD_MASK_DR    (1UL << 19)
 
+// For detecting analog sticks as buttons
+
+#define GAMEPAD_MASK_LX    (1UL << 20)
+#define GAMEPAD_MASK_LY    (1UL << 21)
+#define GAMEPAD_MASK_RX    (1UL << 22)
+#define GAMEPAD_MASK_RY    (1UL << 23)
+
 #define GAMEPAD_MASK_DPAD (GAMEPAD_MASK_UP | GAMEPAD_MASK_DOWN | GAMEPAD_MASK_LEFT | GAMEPAD_MASK_RIGHT)
 
 #define GAMEPAD_JOYSTICK_MIN 0
